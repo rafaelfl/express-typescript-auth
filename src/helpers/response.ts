@@ -9,7 +9,10 @@ const { APP_SERVER_ERROR } = messages;
  * Send http response
  */
 export const sendResponse = (res: Response, data: unknown, code = 200) =>
-  res.status(code).json(data);
+  res.status(code).json({
+    success: true,
+    data,
+  });
 
 /*
  * Send http error response

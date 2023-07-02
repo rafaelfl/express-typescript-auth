@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { asyncWrapper } from "../asyncWrapper";
-import { sendResponse } from "../../util";
+import { sendResponse } from "../../helpers";
 
 const helloController = {
   hello: asyncWrapper(async (_req: Request, res: Response) => {

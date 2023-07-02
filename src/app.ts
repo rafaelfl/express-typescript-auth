@@ -1,12 +1,18 @@
 import express from "express";
 import createError from "http-errors";
 
-import routeModules from "./routes";
 import { messages } from "./constants";
-import { errorHandler } from "./util/index";
+import { errorHandler } from "./helpers/index";
+
+import httpLogger from "./middleware/http-logger";
+import routeModules from "./routes";
+
+const { NOT_FOUND } = messages;
 
 const app = express();
-const { NOT_FOUND } = messages;
+
+// Morgan logger redirected to winston logger
+app.use(httpLogger);
 
 // Let's avoid any CORS issue for now ;)
 app.use((_, res, next) => {
