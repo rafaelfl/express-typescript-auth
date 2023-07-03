@@ -1,7 +1,6 @@
 import morgan from "morgan";
 
-import { env } from "../helpers/utils";
-import logger from "../helpers/logger";
+import { env, logger } from "../helpers";
 
 const stream = {
   write: (message: string) => {

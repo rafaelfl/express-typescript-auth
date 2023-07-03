@@ -1,9 +1,6 @@
 import { Response } from "express";
 
 import { Error } from "../types";
-import { messages } from "../constants";
-
-const { APP_SERVER_ERROR } = messages;
 
 /*
  * Send http response
@@ -17,13 +14,14 @@ export const sendResponse = (res: Response, data: unknown, code = 200) =>
 /*
  * Send http error response
  */
-export const sendError = (res: Response, error: Error) => {
-  const { statusCode = 500, message: errorMessage } = error;
+export const sendError = (res: Response, error: Error, customMessage?: string) => {
+  const { statusCode = 500, message, errors } = error;
 
-  const message = statusCode === 500 ? APP_SERVER_ERROR : errorMessage;
+  const errorMessage = customMessage || message;
 
   return res.status(statusCode).json({
     success: false,
-    message,
+    message: errorMessage,
+    errors,
   });
 };

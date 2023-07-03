@@ -1,13 +1,13 @@
 import express from "express";
 import createError from "http-errors";
+import cookieParser from "cookie-parser";
 
 import { messages } from "./constants";
-import { errorHandler } from "./helpers/index";
+import { errorHandler } from "./helpers";
 
 import httpLogger from "./middleware/http-logger";
+import passport from "./middleware/passport";
 import routeModules from "./routes";
-
-const { NOT_FOUND } = messages;
 
 const app = express();
 
@@ -27,10 +27,15 @@ app.use((_, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(cookieParser());
+
+// passport middleware
+app.use(passport);
+
 routeModules(app);
 
 // catch 404 and forward to exception handler
-app.use((_, __, next) => next(createError(404, NOT_FOUND)));
+app.use((_, __, next) => next(createError(404, messages.NOT_FOUND)));
 
 // exception handlers
 app.use(errorHandler);
