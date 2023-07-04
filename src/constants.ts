@@ -10,4 +10,6 @@ export const messages = {
   INVALID_TOKEN: "Invalid token!",
   EMPTY_TOKEN: "Empty token!",
   USER_NOT_FOUND: "User not found",
+  EXISTING_EMAIL: "User with given email already exist",
+  ACCOUNT_CREATED: "Account registered sucessfully",
 };

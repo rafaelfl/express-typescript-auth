@@ -3,6 +3,7 @@ import { Application } from "express";
 import { config } from "../config";
 import authRoutes from "./auth";
 import helloRoutes from "./hello";
+import adminRoutes from "./admin";
 import protectedRoutes from "./protected";
 
 const { API_VERSION } = config;
@@ -22,6 +23,9 @@ const routes = (app: Application) => {
 
   // protected routes
   app.use(apiPrefix, protectedRoutes);
+
+  // admin routes
+  app.use(`${apiPrefix}/admin`, adminRoutes);
 
   return app;
 };

@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
-import { USER_ROLES } from "../types";
+
 import { logger } from "../helpers";
+import { USER_ROLES } from "../types";
 
 const formattedValidationResult = validationResult.withDefaults({
   formatter: ({ msg }) => ({
@@ -16,7 +17,6 @@ const userResourceValidator = [
   }),
   body("email", "Invalid email address").isEmail(),
   body("password", "'password' is required and must exceed 5 characters").isLength({ min: 5 }),
-  body("role", "'role' is required and must be a valid string").isString().isIn(USER_ROLES),
 ];
 
 export const validators = {
@@ -26,7 +26,6 @@ export const validators = {
   ],
   registerValidationRules: [
     ...userResourceValidator,
-    // TODO: passwordConfirmation field not being sent for now
     body("passwordConfirmation").custom((value, { req }) => {
       if (value !== req.body.password) {
         // throw error if passwords do not match
@@ -34,6 +33,11 @@ export const validators = {
       }
       return true;
     }),
+  ],
+
+  createAccountValidationRules: [
+    ...userResourceValidator,
+    body("role", "'role' is required and must have a valid value").isString().isIn(USER_ROLES),
   ],
 
   validate: (req: Request, res: Response, next: NextFunction) => {

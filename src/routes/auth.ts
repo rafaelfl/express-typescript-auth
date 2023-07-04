@@ -1,12 +1,19 @@
 import { Router } from "express";
 
 import { validators } from "../middleware/validators";
-import { authController } from "../controllers/auth/authController";
 import { authValidator } from "../middleware/authValidator";
+import { authController } from "../controllers";
 
 const router = Router();
 
 router.post("/login", validators.loginValidationRules, validators.validate, authController.login);
+
+router.post(
+  "/register",
+  validators.registerValidationRules,
+  validators.validate,
+  authController.register,
+);
 
 router.post("/refresh", authValidator.verifyRefreshToken, authController.refreshToken);
 

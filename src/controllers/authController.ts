@@ -6,16 +6,18 @@ import {
   convertTimeStrToMillisec,
   generateAccessToken,
   generateTokens,
+  hashPassword,
   logger,
   sendError,
   sendResponse,
   verifyRefreshToken,
-} from "../../helpers";
-import { asyncWrapper } from "../asyncWrapper";
-import { userTokenService } from "../../services/userTokenService";
-import { config } from "../../config";
-import { Error, User } from "../../types";
-import { messages } from "../../constants";
+} from "../helpers";
+import { asyncWrapper } from "./utils/asyncWrapper";
+import { userTokenService } from "../services/userTokenService";
+import { config } from "../config";
+import { Error, User } from "../types";
+import { messages } from "../constants";
+import { userService } from "../services/userService";
 
 function promisifiedPassportLocalAuthentication(req: Request, res: Response, next: NextFunction) {
   return new Promise<{ user: User; accessToken: string; refreshToken: string }>(
@@ -42,7 +44,7 @@ function promisifiedPassportLocalAuthentication(req: Request, res: Response, nex
   );
 }
 
-export const authController = {
+const authController = {
   login: asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await promisifiedPassportLocalAuthentication(req, res, next);
@@ -61,6 +63,30 @@ export const authController = {
       });
 
       return sendResponse(res, { token: accessToken }, 201);
+    } catch (err) {
+      const error = err as Error;
+
+      logger.error(error.message);
+      return sendError(res, error);
+    }
+  }),
+
+  register: asyncWrapper(async (req: Request, res: Response) => {
+    try {
+      const { name, email, password } = req.body;
+
+      const existingUser = await userService.findUserByEmail(email);
+
+      if (existingUser) {
+        logger.error(messages.EXISTING_EMAIL);
+        return sendError(res, createError(409, messages.EXISTING_EMAIL));
+      }
+
+      const hash = await hashPassword(password);
+
+      await userService.create(name, email, hash, "user");
+
+      return sendResponse(res, messages.ACCOUNT_CREATED, 201);
     } catch (err) {
       const error = err as Error;
 
@@ -104,3 +130,5 @@ export const authController = {
     return sendResponse(res, messages.SUCCESS_LOGOUT, 303);
   }),
 };
+
+export default authController;
