@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
 
-import { JwtPayload, User, UserRoles, UserToken } from "../types";
+import { User, UserRoles } from "../types";
 import { config } from "../config";
-import { messages } from "../constants";
 
 export const generateTokens = (user: User) => {
   const payload = { id: user.id, role: user.role };
@@ -26,25 +25,4 @@ export const generateAccessToken = (id: string, role: UserRoles) => {
   });
 
   return accessToken;
-};
-
-export const verifyRefreshToken = async (userToken: UserToken | undefined) => {
-  const privateKey = config.refreshTokenPrivateKey;
-  const resfreshToken = userToken?.token;
-
-  return new Promise<JwtPayload>((resolve, reject) => {
-    if (!resfreshToken) {
-      reject(new Error(messages.INVALID_TOKEN));
-      return;
-    }
-
-    jwt.verify(resfreshToken, privateKey, (err, decodedToken) => {
-      if (err) {
-        reject(new Error(messages.INVALID_TOKEN));
-        return;
-      }
-
-      resolve(decodedToken as JwtPayload);
-    });
-  });
 };

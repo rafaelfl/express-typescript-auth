@@ -8,7 +8,24 @@ import { messages } from "../constants";
 
 export const authValidator = {
   verifyAccessToken: (req: Request, res: Response, next: NextFunction) =>
-    passport.authenticate("jwt", { session: false })(req, res, next),
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      (err: Error, user: User, info: { message: string }) => {
+        if (err) {
+          next(createError(500, err));
+        }
+
+        if (!user) {
+          const { message } = info;
+          next(createError(401, message));
+        }
+
+        req.user = user;
+
+        next();
+      },
+    )(req, res, next),
 
   verifyRefreshToken: (req: Request, res: Response, next: NextFunction) =>
     passport.authenticate(
@@ -23,6 +40,8 @@ export const authValidator = {
           const { message } = info;
           next(createError(403, message));
         }
+
+        req.user = user;
 
         next();
       },

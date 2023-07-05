@@ -10,7 +10,6 @@ import {
   logger,
   sendError,
   sendResponse,
-  verifyRefreshToken,
 } from "../helpers";
 import { asyncWrapper } from "./utils/asyncWrapper";
 import { userTokenService } from "../services/userTokenService";
@@ -96,18 +95,14 @@ const authController = {
   }),
 
   refreshToken: asyncWrapper(async (req: Request, res: Response) => {
-    const { refreshToken } = req.cookies;
+    const user = req.user as User | undefined;
 
     try {
-      const userToken = await userTokenService.findUserTokenByToken(refreshToken);
-
-      if (!userToken) {
-        throw createError(403, messages.INVALID_TOKEN);
+      if (!user || !user.id) {
+        throw createError(403, messages.USER_NOT_FOUND);
       }
 
-      const result = await verifyRefreshToken(userToken);
-
-      const accessToken = generateAccessToken(result.id, result.role);
+      const accessToken = generateAccessToken(user.id, user.role);
 
       return sendResponse(res, { token: accessToken }, 200);
     } catch (err) {
