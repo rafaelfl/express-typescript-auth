@@ -2,7 +2,7 @@
 .git
 .cache
 # ignore all node_modules
-node_modules
+/node_modules/
 .husky/
 .vscode/
 build/

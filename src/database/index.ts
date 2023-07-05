@@ -27,7 +27,6 @@ export const connect = async () => {
     .once("open", () => logger.info(`MongoDB connected to ${databaseUrl}`));
 
   await mongoose.connect(databaseUrl, {
-    keepAlive: true,
     user: databaseUser,
     pass: databasePassword,
   });

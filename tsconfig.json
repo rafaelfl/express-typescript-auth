@@ -17,13 +17,17 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    // Ensure that .d.ts files are created by tsc, but not .js files
-    "declaration": true,
-    "emitDeclarationOnly": true,
     // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,
     "typeRoots": ["./types"]
   },
-  "include": ["src/**/*.ts", "setupTests.ts"],
-  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**/*.ts", "node_modules"]
+  "include": ["**/*.ts"],
+  "exclude": [
+    "jest.config.ts",
+    "setupTests.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**/*.ts",
+    "node_modules"
+  ]
 }

@@ -1,13 +1,12 @@
 version: '3.8'
 services:
   server:
-    image: "node:16.15.0-alpine"
+    build: .
+    # platform: linux/x86_64
     container_name: server
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "yarn install && yarn start"
     working_dir: "/app"
+    environment:
+      port: 3000
     ports:
       - "3000:3000"
     restart: always
@@ -15,7 +14,7 @@ services:
       - mongo
     volumes:
       - ./:/app
-      - ./node_modules:/app/node_modules
+      - /app/node_modules
 
   mongo:
     image: mongo
