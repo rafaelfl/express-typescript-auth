@@ -1,17 +1,25 @@
 import express from "express";
 import createError from "http-errors";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 
 import { messages } from "./constants";
 import { errorHandler } from "./helpers";
 
+import { connect } from "./database";
 import httpLogger from "./middleware/http-logger";
 import passport from "./middleware/passport";
 import routeModules from "./routes";
+import { loadConfigVariables } from "./config";
+
+dotenv.config();
+
+// LOAD ENVIRONMENT VARIABLES
+loadConfigVariables();
 
 const app = express();
 
-// Morgan logger redirected to winston logger
+// Morgan redirected to winston logger
 app.use(httpLogger);
 
 // Let's avoid any CORS issue for now ;)
@@ -28,6 +36,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
+
+// mongoose connection
+connect();
 
 // passport middleware
 app.use(passport);

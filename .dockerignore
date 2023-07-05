@@ -1,0 +1,29 @@
+# ignore .git and .cache folders
+.git
+.cache
+# ignore all node_modules
+node_modules
+.husky/
+.vscode/
+build/
+coverage/
+logs/
+# ignore all markdown files (md) beside all README*.md other than README-secret.md
+*.md
+!README*.md
+README-secret.md
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### Node ###
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*

@@ -8,7 +8,7 @@ export const messages = {
   SUCCESS_LOGIN: "Succesful Login! 😊",
   SUCCESS_LOGOUT: "Succesful Logout! 🛫",
   INVALID_TOKEN: "Invalid token!",
-  EMPTY_TOKEN: "Empty token!",
+  EMPTY_TOKEN: "Refresh token unavailable",
   USER_NOT_FOUND: "User not found",
   EXISTING_EMAIL: "User with given email already exist",
   ACCOUNT_CREATED: "Account registered sucessfully",

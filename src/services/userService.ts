@@ -1,44 +1,68 @@
+import { Document, Types } from "mongoose";
 import createError from "http-errors";
 
-import database from "../database/fakeDB";
+import userModel, { UserModel } from "../database/model/userModel";
 import { User, UserRoles } from "../types";
 import { messages } from "../constants";
 
+type UserDoc = Document<unknown, NonNullable<unknown>, UserModel> &
+  Omit<
+    UserModel & {
+      _id: Types.ObjectId;
+    },
+    never
+  >;
+
+const convertUserDocToUser = (userDoc: UserDoc) => {
+  const user: User = {
+    id: userDoc._id.toString(),
+    name: userDoc.name,
+    email: userDoc.email,
+    password: userDoc.password,
+    role: userDoc.role,
+  };
+
+  return user;
+};
+
 export const userService = {
-  create: async (name: string, email: string, password: string, role: UserRoles): Promise<User> => {
-    const result = await database.create("user", {
+  create: async (
+    name: string,
+    email: string,
+    hashPassword: string,
+    role: UserRoles,
+  ): Promise<User> => {
+    const userDoc = await userModel.create({
       name,
       email,
-      password,
+      password: hashPassword,
       role,
     });
 
-    if (!result) {
+    if (!userDoc) {
       throw createError(500, messages.APP_SERVER_ERROR);
     }
 
-    const user = result as User;
-
-    return user;
+    return convertUserDocToUser(userDoc);
   },
 
   findUserByEmail: async (email: string) => {
-    const result = await database.findOne("user", { email });
+    const userDoc = await userModel.findOne({ email }).select("+password").exec();
 
-    if (!result) {
+    if (!userDoc) {
       return null;
     }
 
-    return result as User;
+    return convertUserDocToUser(userDoc);
   },
 
   findUserById: async (id: string) => {
-    const result = await database.findOne("user", { id });
+    const userDoc = await userModel.findOne({ _id: new Types.ObjectId(id) }).exec();
 
-    if (!result) {
+    if (!userDoc) {
       return null;
     }
 
-    return result as User;
+    return convertUserDocToUser(userDoc);
   },
 };

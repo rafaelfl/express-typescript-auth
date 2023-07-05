@@ -39,9 +39,7 @@ export const verifyRefreshToken = async (userToken: UserToken | undefined) => {
     }
 
     jwt.verify(resfreshToken, privateKey, (err, decodedToken) => {
-      console.log("  verify refresh token");
       if (err) {
-        console.log("  ERR refresh token");
         reject(new Error(messages.INVALID_TOKEN));
         return;
       }

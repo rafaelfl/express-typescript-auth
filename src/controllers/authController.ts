@@ -27,17 +27,17 @@ function promisifiedPassportLocalAuthentication(req: Request, res: Response, nex
         { session: false },
         (err: Error, user: User, info: { message: string }) => {
           if (err) {
-            reject(createError(500, err));
+            return reject(createError(500, err));
           }
 
           if (!user) {
             const { message } = info;
-            reject(createError(401, message));
+            return reject(createError(401, message));
           }
 
           const { accessToken, refreshToken } = generateTokens(user);
 
-          resolve({ user, accessToken, refreshToken });
+          return resolve({ user, accessToken, refreshToken });
         },
       )(req, res, next);
     },
