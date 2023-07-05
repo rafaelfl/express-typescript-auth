@@ -1,3 +1,4 @@
+import { Request } from "express";
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback } from "passport-jwt";
 import { Strategy as LocalStrategy } from "passport-local";
@@ -63,6 +64,24 @@ passport.deserializeUser<string>(async (id, done) => {
   }
 });
 
+const jwtVerification = async (jwtPayload: JwtPayload, done: VerifiedCallback) => {
+  try {
+    const user = await userService.findUserById(jwtPayload.id);
+
+    if (!user) {
+      logger.error(messages.USER_NOT_FOUND);
+      return done(null, false, {
+        message: messages.USER_NOT_FOUND,
+      });
+    }
+
+    return done(null, user);
+  } catch (err) {
+    logger.error(err);
+    return done(err, false);
+  }
+};
+
 passport.use(
   "jwt",
   new JwtStrategy(
@@ -70,23 +89,28 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.accessTokenPrivateKey,
     },
-    async (jwtPayload: JwtPayload, done: VerifiedCallback) => {
-      try {
-        const user = await userService.findUserById(jwtPayload.id);
+    jwtVerification,
+  ),
+);
 
-        if (!user) {
-          logger.error(messages.USER_NOT_FOUND);
-          return done(null, false, {
-            message: messages.INVALID_TOKEN,
-          });
-        }
+const cookieExtractor = (req: Request) => {
+  const { refreshToken } = req.cookies;
 
-        return done(null, user);
-      } catch (err) {
-        logger.error(err);
-        return done(err, false);
-      }
+  if (!refreshToken) {
+    return null;
+  }
+
+  return refreshToken;
+};
+
+passport.use(
+  "jwt-refresh",
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+      secretOrKey: config.refreshTokenPrivateKey,
     },
+    jwtVerification,
   ),
 );
 
