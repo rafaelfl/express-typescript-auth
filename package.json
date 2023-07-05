@@ -7,10 +7,10 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf ./build",
-    "start": "npx ts-node ./src/index.ts",
     "dev": "nodemon src -e ts,json,yaml --exec 'yarn start'",
     "build": "yarn clean && tsc -p .",
-    "execute": "yarn build && node ./build/index.js",
+    "start-ts": "npx ts-node ./src/index.ts",
+    "start": "node ./build/index.js",
     "lint": "eslint . --ext .ts",
     "lint-fix": "eslint . --ext .ts --fix",
     "prettier": "prettier --write .",

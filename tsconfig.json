@@ -3,7 +3,8 @@
     "target": "ES6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "rootDir": "src",
-    "outDir": "build",
+    "baseUrl": "./src/",
+    "outDir": "./build",
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +20,7 @@
     "resolveJsonModule": true,
     // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,
-    "typeRoots": ["./types"]
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["**/*.ts"],
   "exclude": [
