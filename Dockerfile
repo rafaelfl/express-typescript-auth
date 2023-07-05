@@ -6,7 +6,8 @@ WORKDIR /app
 COPY . .
 
 RUN yarn install --ignore-scripts
+RUN yarn build
 
-CMD ["yarn", "execute"]
+CMD ["yarn", "start"]
 EXPOSE 3000
 
