@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "ES6",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "rootDir": "src",
-    "baseUrl": "./src/",
+    "baseUrl": "./src",
     "outDir": "./build",
     "allowJs": false,
     "skipLibCheck": true,
@@ -22,13 +21,13 @@
     "isolatedModules": true,
     "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "include": ["**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "jest.config.ts",
     "setupTests.ts",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**/*.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/__tests__/**/*.ts",
     "node_modules"
   ]
 }
