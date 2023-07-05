@@ -87,7 +87,8 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.accessTokenPrivateKey,
+      // secretOrKey: config.accessTokenPrivateKey,
+      secretOrKeyProvider: (_, __, done) => done(null, config.accessTokenPrivateKey),
     },
     jwtVerification,
   ),
@@ -108,7 +109,8 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-      secretOrKey: config.refreshTokenPrivateKey,
+      // secretOrKey: config.refreshTokenPrivateKey,
+      secretOrKeyProvider: (_, __, done) => done(null, config.refreshTokenPrivateKey),
     },
     jwtVerification,
   ),
