@@ -1,7 +1,6 @@
 import express from "express";
 import createError from "http-errors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 
 import { messages } from "./constants";
 import { errorHandler } from "./helpers";
@@ -11,8 +10,6 @@ import httpLogger from "./middleware/http-logger";
 import passport from "./middleware/passport";
 import routeModules from "./routes";
 import { loadConfigVariables } from "./config";
-
-dotenv.config();
 
 // LOAD ENVIRONMENT VARIABLES
 loadConfigVariables();

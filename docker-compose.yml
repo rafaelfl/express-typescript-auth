@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   server:
     build: .
@@ -24,9 +24,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: admin
     volumes:
-     - mongodb:/data/db
-     - mongodb_config:/data/configdb
-     - ./dump:/dump
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+      - ./dump:/dump
     ports:
       - "27017:27017"
 

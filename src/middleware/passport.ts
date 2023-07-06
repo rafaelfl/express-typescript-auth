@@ -4,11 +4,13 @@ import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback } from "passport-
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 
+import { config, loadConfigVariables } from "../config";
 import { userService } from "../services/userService";
 import { JwtPayload, User } from "../types";
 import { logger } from "../helpers";
-import { config } from "../config";
 import { messages } from "../constants";
+
+loadConfigVariables();
 
 // Local strategy: it will receive the login POST
 // we will use the 'email' and 'password' fields of the body
@@ -87,8 +89,7 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      // secretOrKey: config.accessTokenPrivateKey,
-      secretOrKeyProvider: (_, __, done) => done(null, config.accessTokenPrivateKey),
+      secretOrKey: config.accessTokenPrivateKey,
     },
     jwtVerification,
   ),
@@ -109,8 +110,7 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-      // secretOrKey: config.refreshTokenPrivateKey,
-      secretOrKeyProvider: (_, __, done) => done(null, config.refreshTokenPrivateKey),
+      secretOrKey: config.refreshTokenPrivateKey,
     },
     jwtVerification,
   ),

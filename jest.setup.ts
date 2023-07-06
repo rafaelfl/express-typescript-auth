@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from "dotenv";
 
 // const fetchMock = require('jest-fetch-mock');
 // fetchMock.enableMocks();
@@ -8,5 +8,5 @@ const dotenv = require('dotenv');
 
 // Establish API mocking before all tests.
 beforeAll(() => {
-    dotenv.config({ path: '.env.test' });
+  dotenv.config({ path: ".env.test" });
 });

@@ -37,6 +37,14 @@
     "arrow-parens": ["error", "as-needed"],
     "no-underscore-dangle": "off"
   },
+  "overrides": [
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ],
   "settings": {
     "import/resolver": {
       "typescript": {}

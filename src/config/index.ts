@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import { env } from "../helpers";
 
 export const config = {
@@ -21,6 +22,10 @@ export const config = {
 };
 
 export const loadConfigVariables = () => {
+  // loading .env and .env.local
+  dotenv.config();
+  dotenv.config({ path: ".env.local" });
+
   config.salt = env("SALT", config.salt) as number;
 
   // jwt parameters

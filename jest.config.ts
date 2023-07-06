@@ -21,7 +21,7 @@ const config: Config = {
   resetMocks: false,
   testEnvironment: "node",
   transformIgnorePatterns: ["./node_modules/"],
-  setupFilesAfterEnv: ["./jest.setup.js"],
+  setupFilesAfterEnv: ["./jest.setup.ts"],
   setupFiles: ["dotenv/config"],
   roots: ["<rootDir>"],
   collectCoverage: false,
