@@ -82,4 +82,12 @@ export const userTokenService = {
 
     return convertUserDocToUserToken(userTokenDoc);
   },
+
+  removeAllUserTokensById: async (userId: string) => {
+    await userTokenModel
+      .deleteMany({
+        userId: new Types.ObjectId(userId),
+      })
+      .exec();
+  },
 };

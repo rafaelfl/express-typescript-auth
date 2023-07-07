@@ -6,9 +6,8 @@ import bcrypt from "bcrypt";
 
 import { config, loadConfigVariables } from "../config";
 import { userService } from "../services/userService";
-import { JwtPayload, User } from "../types";
+import { JwtPayload } from "../types";
 import { logger } from "../helpers";
-import { messages } from "../constants";
 
 loadConfigVariables();
 
@@ -51,38 +50,8 @@ passport.use(
   ),
 );
 
-passport.serializeUser((user, done) => {
-  const userDocument = user as User;
-  return done(null, userDocument.id);
-});
-
-passport.deserializeUser<string>(async (id, done) => {
-  try {
-    const user = await userService.findUserById(id);
-    return done(null, user);
-  } catch (err) {
-    logger.error(err);
-    return done(err);
-  }
-});
-
-const jwtVerification = async (jwtPayload: JwtPayload, done: VerifiedCallback) => {
-  try {
-    const user = await userService.findUserById(jwtPayload.id);
-
-    if (!user) {
-      logger.error(messages.USER_NOT_FOUND);
-      return done(null, false, {
-        message: messages.USER_NOT_FOUND,
-      });
-    }
-
-    return done(null, user);
-  } catch (err) {
-    logger.error(err);
-    return done(err, false);
-  }
-};
+const jwtVerification = async (jwtPayload: JwtPayload, done: VerifiedCallback) =>
+  done(null, jwtPayload);
 
 passport.use(
   "jwt",
@@ -96,7 +65,7 @@ passport.use(
 );
 
 const cookieExtractor = (req: Request) => {
-  const { refreshToken } = req.cookies;
+  const refreshToken = req.cookies[config.refreshTokenName];
 
   if (!refreshToken) {
     return null;

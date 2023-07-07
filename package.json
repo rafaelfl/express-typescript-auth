@@ -9,7 +9,7 @@
     "clean": "rimraf ./build",
     "dev": "nodemon src -e ts,json,yaml --exec 'yarn start-ts'",
     "build": "yarn clean && tsc -p .",
-    "start-ts": "npx ts-node ./src/index.ts",
+    "start-ts": "npx ts-node --files ./src/index.ts",
     "start": "node ./build/index.js",
     "lint": "eslint . --ext .ts",
     "lint-fix": "eslint . --ext .ts --fix",
@@ -33,6 +33,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "redis": "^4.6.7",
     "uuid": "^9.0.0",
     "winston": "^3.9.0"
   },

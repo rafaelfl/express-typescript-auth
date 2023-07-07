@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { messages } from "./constants";
 import { errorHandler } from "./helpers";
 
-import { connect } from "./database";
+import { connectMongoDB } from "./database";
 import httpLogger from "./middleware/http-logger";
 import passport from "./middleware/passport";
 import routeModules from "./routes";
@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // mongoose connection
-connect();
+connectMongoDB();
 
 // passport middleware
 app.use(passport);

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import passport from "passport";
 
-import { User } from "../types";
+import { JwtPayload } from "../types";
 import { logger, sendError } from "../helpers";
 import { messages } from "../constants";
 
@@ -11,17 +11,19 @@ export const authValidator = {
     passport.authenticate(
       "jwt",
       { session: false },
-      (err: Error, user: User, info: { message: string }) => {
+      (err: Error, jwtPayload: JwtPayload, info: { message: string }) => {
         if (err) {
           next(createError(500, err));
         }
 
-        if (!user) {
+        if (!jwtPayload) {
           const { message } = info;
           next(createError(401, message));
         }
 
-        req.user = user;
+        req.userId = jwtPayload.id;
+        req.userRole = jwtPayload.role;
+        req.tokenExp = jwtPayload.exp;
 
         next();
       },
@@ -31,27 +33,29 @@ export const authValidator = {
     passport.authenticate(
       "jwt-refresh",
       { session: false },
-      (err: Error, user: User, info: { message: string }) => {
+      (err: Error, jwtPayload: JwtPayload, info: { message: string }) => {
         if (err) {
           next(createError(500, err));
         }
 
-        if (!user) {
+        if (!jwtPayload) {
           const { message } = info;
           next(createError(403, message));
         }
 
-        req.user = user;
+        req.userId = jwtPayload.id;
+        req.userRole = jwtPayload.role;
+        req.tokenExp = jwtPayload.exp;
 
         next();
       },
     )(req, res, next),
 
   adminOnly: (req: Request, res: Response, next: NextFunction) => {
-    const { email, role } = req.user as User;
+    const { userId, userRole } = req;
 
-    if (role !== "admin") {
-      logger.error(`user ${email} attempted to access admin only route`);
+    if (userRole !== "admin") {
+      logger.error(`user ${userId} attempted to access admin only route`);
       return sendError(res, createError(403, messages.ACCESS_DENIED));
     }
 

@@ -18,12 +18,12 @@ import { config } from "../config";
     replace by mongoose seed or mongoose migration
 */
 
-export const connect = async () => {
+export const connectMongoDB = async () => {
   const { databaseUrl, databaseUser, databasePassword } = config;
 
   mongoose.connection
     .on("error", err => logger.error(err.message))
-    .on("disconnected", connect)
+    .on("disconnected", connectMongoDB)
     .once("open", () => logger.info(`MongoDB connected to ${databaseUrl}`));
 
   await mongoose.connect(databaseUrl, {

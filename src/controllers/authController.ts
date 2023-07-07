@@ -4,7 +4,6 @@ import createError from "http-errors";
 
 import {
   convertTimeStrToMillisec,
-  generateAccessToken,
   generateTokens,
   hashPassword,
   logger,
@@ -34,7 +33,7 @@ function promisifiedPassportLocalAuthentication(req: Request, res: Response, nex
             return reject(createError(401, message));
           }
 
-          const { accessToken, refreshToken } = generateTokens(user);
+          const { accessToken, refreshToken } = generateTokens(user.id, user.role);
 
           return resolve({ user, accessToken, refreshToken });
         },
@@ -46,17 +45,44 @@ function promisifiedPassportLocalAuthentication(req: Request, res: Response, nex
 const authController = {
   login: asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await promisifiedPassportLocalAuthentication(req, res, next);
+      const {
+        user,
+        accessToken,
+        refreshToken: newRefreshToken,
+      } = await promisifiedPassportLocalAuthentication(req, res, next);
 
-      const { user, accessToken, refreshToken } = result;
+      const { refreshToken: existingRefreshToken } = req.cookies;
 
-      await userTokenService.removeUserTokenById(user.id ?? "");
-      await userTokenService.create(user.id ?? "", refreshToken);
+      // in case exists a refresh token cookie...
+      if (existingRefreshToken) {
+        const userToken = await userTokenService.findUserTokenByToken(existingRefreshToken);
 
-      res.cookie(config.refreshTokenName, refreshToken, {
+        // if it doesn't exists in the database, it means that someone else rotated it!
+        //  So, let's clear all valid refresh tokens
+        if (!userToken) {
+          logger.warn(
+            `The refresh token sent from ${user.id} was used in another device. All devices were signed out`,
+          );
+
+          // remove all valid user tokens for that user id
+          await userTokenService.removeAllUserTokensById(user.id);
+        } else {
+          // in case the cookie is available in the session and it's in the database
+          // we need rotate it
+          await userTokenService.removeUserTokenById(user.id);
+        }
+
+        // invalidate refresh token cookie
+        res.clearCookie(config.refreshTokenName);
+      }
+
+      // register the new refreshToken
+      await userTokenService.create(user.id, newRefreshToken);
+
+      res.cookie(config.refreshTokenName, newRefreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         domain: config.cookieDomain,
         maxAge: convertTimeStrToMillisec(config.refreshTokenExpiration),
       });
@@ -66,6 +92,11 @@ const authController = {
       const error = err as Error;
 
       logger.error(error.message);
+
+      if (error.message === messages.INVALID_TOKEN || error.message === messages.NO_AUTH_TOKEN) {
+        return sendError(res, createError(403, error));
+      }
+
       return sendError(res, error);
     }
   }),
@@ -95,14 +126,46 @@ const authController = {
   }),
 
   refreshToken: asyncWrapper(async (req: Request, res: Response) => {
-    const user = req.user as User | undefined;
+    const { userId, userRole } = req;
 
     try {
-      if (!user || !user.id) {
-        throw createError(403, messages.USER_NOT_FOUND);
+      if (!userId || !userRole) {
+        throw createError(403, messages.CANNOT_RETRIEVE_USER_DATA);
       }
 
-      const accessToken = generateAccessToken(user.id, user.role);
+      const refreshToken = req.cookies[config.refreshTokenName];
+
+      // look for a valid refresh token
+      const userToken = await userTokenService.findUserTokenByToken(refreshToken);
+
+      // in case a (valid) refresh token arives here but it is not in the database
+      // (i.e., someone else used it), force the sign-in from all devices again
+      if (!userToken) {
+        await userTokenService.removeAllUserTokensById(userId);
+
+        logger.warn(
+          `The refresh token sent from ${userId} was used in another device. All devices were signed out.`,
+        );
+        throw createError(403, "Refresh token unavailable. You need to perform the sign in again.");
+      }
+
+      // let's delete the refresh token to rotate it
+      await userTokenService.removeUserTokenByToken(refreshToken);
+
+      // invalidate refresh token cookie
+      res.clearCookie(config.refreshTokenName);
+
+      const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId, userRole);
+
+      await userTokenService.create(userId, newRefreshToken);
+
+      res.cookie(config.refreshTokenName, newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        domain: config.cookieDomain,
+        maxAge: convertTimeStrToMillisec(config.refreshTokenExpiration),
+      });
 
       return sendResponse(res, { token: accessToken }, 200);
     } catch (err) {
@@ -114,7 +177,7 @@ const authController = {
   }),
 
   logout: asyncWrapper(async (req: Request, res: Response) => {
-    const { refreshToken } = req.cookies;
+    const refreshToken = req.cookies[config.refreshTokenName];
 
     await userTokenService.removeUserTokenByToken(refreshToken);
 
