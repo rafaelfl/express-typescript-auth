@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
+import { ExtractJwt } from "passport-jwt";
 import createError from "http-errors";
 
+import { tokenBlackListService } from "../services/tokenBlackListService";
 import {
   convertTimeStrToMillisec,
   generateTokens,
@@ -177,9 +179,19 @@ const authController = {
   }),
 
   logout: asyncWrapper(async (req: Request, res: Response) => {
+    const { tokenExp } = req;
+
     const refreshToken = req.cookies[config.refreshTokenName];
+    const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
     await userTokenService.removeUserTokenByToken(refreshToken);
+
+    if (accessToken) {
+      tokenBlackListService.addTokenToBlacklist(
+        accessToken,
+        tokenExp ?? convertTimeStrToMillisec(config.accessTokenExpiration),
+      );
+    }
 
     // invalidate refresh token cookie
     res.clearCookie(config.refreshTokenName);

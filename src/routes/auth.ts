@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { validators } from "../middleware/validators";
-import { authValidator } from "../middleware/authVerifier";
+import { authVerifier } from "../middleware/authVerifier";
 import { authController } from "../controllers";
 
 const router = Router();
@@ -15,8 +15,8 @@ router.post(
   authController.register,
 );
 
-router.post("/refresh", authValidator.verifyRefreshToken, authController.refreshToken);
+router.post("/refresh", authVerifier.verifyRefreshToken, authController.refreshToken);
 
-router.post("/logout", authController.logout);
+router.post("/logout", authVerifier.verifyAccessToken, authController.logout);
 
 export default router;

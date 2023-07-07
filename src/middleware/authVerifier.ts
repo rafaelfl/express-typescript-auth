@@ -6,7 +6,7 @@ import { JwtPayload } from "../types";
 import { logger, sendError } from "../helpers";
 import { messages } from "../constants";
 
-export const authValidator = {
+export const authVerifier = {
   verifyAccessToken: (req: Request, res: Response, next: NextFunction) =>
     passport.authenticate(
       "jwt",

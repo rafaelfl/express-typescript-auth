@@ -1,16 +1,16 @@
 import { Router } from "express";
 
-import { authValidator } from "../middleware/authVerifier";
+import { authVerifier } from "../middleware/authVerifier";
 import { protectedController } from "../controllers";
 
 const router = Router();
 
-router.get("/protected", authValidator.verifyAccessToken, protectedController.protected);
+router.get("/protected", authVerifier.verifyAccessToken, protectedController.protected);
 
 router.get(
   "/adminProtected",
-  authValidator.verifyAccessToken,
-  authValidator.adminOnly,
+  authVerifier.verifyAccessToken,
+  authVerifier.adminOnly,
   protectedController.adminProtected,
 );
 

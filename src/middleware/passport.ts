@@ -4,6 +4,8 @@ import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback } from "passport-
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 
+import { tokenBlackListService } from "../services/tokenBlackListService";
+import { messages } from "../constants";
 import { config, loadConfigVariables } from "../config";
 import { userService } from "../services/userService";
 import { JwtPayload } from "../types";
@@ -59,8 +61,29 @@ passport.use(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.accessTokenPrivateKey,
+      passReqToCallback: true,
     },
-    jwtVerification,
+    async (req: Request, jwtPayload: JwtPayload, done: VerifiedCallback) => {
+      try {
+        const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+
+        if (accessToken) {
+          const isBlocked = await tokenBlackListService.isTokenBlackListed(accessToken);
+
+          if (isBlocked) {
+            logger.error(messages.NOT_LOGGED);
+            return done(null, false, {
+              message: messages.NOT_LOGGED,
+            });
+          }
+        }
+      } catch (err) {
+        logger.error(err);
+        return done(err, false);
+      }
+
+      return jwtVerification(jwtPayload, done);
+    },
   ),
 );
 

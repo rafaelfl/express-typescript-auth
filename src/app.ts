@@ -2,6 +2,7 @@ import express from "express";
 import createError from "http-errors";
 import cookieParser from "cookie-parser";
 
+import redisClient from "./redisDatabase";
 import { messages } from "./constants";
 import { errorHandler } from "./helpers";
 
@@ -36,6 +37,9 @@ app.use(cookieParser());
 
 // mongoose connection
 connectMongoDB();
+
+// ping Redis database to connect
+redisClient.ping();
 
 // passport middleware
 app.use(passport);

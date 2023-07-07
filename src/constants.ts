@@ -13,4 +13,5 @@ export const messages = {
   CANNOT_RETRIEVE_USER_DATA: "It was not possible to retrieve user data",
   EXISTING_EMAIL: "User with given email already exists",
   ACCOUNT_CREATED: "Account registered sucessfully",
+  NOT_LOGGED: "Account not logged in",
 };

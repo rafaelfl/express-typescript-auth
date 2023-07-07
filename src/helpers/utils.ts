@@ -32,4 +32,4 @@ export const convertTimeStrToMillisec = (timeString: string) =>
     const curVal = parseInt(cur, 10);
 
     return (curVal || 0) * multiplier + acc;
-  }, 0);
+  }, 0) ?? 0;

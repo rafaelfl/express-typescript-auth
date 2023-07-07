@@ -19,6 +19,9 @@ export const config = {
   databaseUrl: "mongodb://authusers:123456@mongo:27017/authusers",
   databaseUser: "authusers",
   databasePassword: "123456",
+
+  // redis
+  redisUrl: "redis://alice:foobared@awesome.redis.server:6380",
 };
 
 export const loadConfigVariables = () => {
@@ -53,4 +56,7 @@ export const loadConfigVariables = () => {
   config.databaseUrl = env("DATABASE_URL", config.databaseUrl) as string;
   config.databaseUser = env("DATABASE_USER", config.databaseUser) as string;
   config.databasePassword = env("DATABASE_PASSWORD", config.databasePassword) as string;
+
+  // redis
+  config.redisUrl = env("REDIS_URL", config.redisUrl) as string;
 };
