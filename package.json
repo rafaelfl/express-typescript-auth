@@ -1,6 +1,6 @@
 {
   "name": "express-typescript-auth",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "main": "./build/index.js",
   "repository": "https://github.com/rafaelfl/express-typescript-auth.git",
   "author": "Rafael Fernandes Lopes <rafael.fernandes@gmail.com>",
