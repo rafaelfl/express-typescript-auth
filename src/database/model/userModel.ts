@@ -9,6 +9,8 @@ export interface UserModel extends Document {
   email: string;
   password: string;
   role: UserRoles;
+  photo?: string;
+  aboutMe?: string;
 }
 
 const UserSchema = new Schema<UserModel>({
@@ -32,6 +34,12 @@ const UserSchema = new Schema<UserModel>({
     type: String,
     required: true,
     enum: USER_ROLES,
+  },
+  photo: {
+    type: String,
+  },
+  aboutMe: {
+    type: String,
   },
 });
 

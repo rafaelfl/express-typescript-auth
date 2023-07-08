@@ -19,6 +19,13 @@ router.post("/refresh", authVerifier.verifyRefreshToken, authController.refreshT
 
 router.post("/logout", authVerifier.verifyAccessToken, authController.logout);
 
-router.get("/profile", authVerifier.verifyAccessToken, authController.profile);
+router.get("/profile", authVerifier.verifyAccessToken, authController.getProfile);
+router.patch(
+  "/profile",
+  authVerifier.verifyAccessToken,
+  validators.updateProfileValidationRules,
+  validators.validate,
+  authController.updateProfile,
+);
 
 export default router;

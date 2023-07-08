@@ -15,4 +15,5 @@ export const messages = {
   ACCOUNT_CREATED: "Account registered sucessfully",
   NOT_LOGGED: "Account not logged in",
   USER_NOT_FOUND: "User not found",
+  USER_NOT_UPDATED: "User not updated",
 };

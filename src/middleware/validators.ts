@@ -40,6 +40,22 @@ export const validators = {
     body("role", "'role' is required and must have a valid value").isString().isIn(USER_ROLES),
   ],
 
+  updateProfileValidationRules: [
+    body("name", "'name' must exceed 5 characters").optional().isLength({
+      min: 5,
+    }),
+    body("password", "'password' must exceed 5 characters").optional().isLength({ min: 5 }),
+    body("passwordConfirmation").custom((value, { req }) => {
+      if (req.body.password && value !== req.body.password) {
+        // throw error if passwords do not match
+        throw new Error("Passwords do not match");
+      }
+      return true;
+    }),
+    body("photo", "'photo' must be a valid URL").optional().isURL(),
+    body("aboutMe").optional().isString(),
+  ],
+
   validate: (req: Request, res: Response, next: NextFunction) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
     const errors = formattedValidationResult(req);

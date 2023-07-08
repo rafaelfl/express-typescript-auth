@@ -20,6 +20,8 @@ const convertUserDocToUser = (userDoc: UserDoc) => {
     email: userDoc.email,
     password: userDoc.password,
     role: userDoc.role,
+    photo: userDoc.photo,
+    aboutMe: userDoc.aboutMe,
   };
 
   return user;
@@ -64,5 +66,43 @@ export const userService = {
     }
 
     return convertUserDocToUser(userDoc);
+  },
+
+  findAndUpdateUserById: async (
+    id: string,
+    name: string | undefined,
+    password: string | undefined,
+    photo: string | undefined,
+    aboutMe: string | undefined,
+  ) => {
+    const updateData: { [key: string]: string } = {};
+
+    if (name) {
+      updateData.name = name;
+    }
+
+    if (password) {
+      updateData.password = password;
+    }
+
+    if (photo) {
+      updateData.photo = photo;
+    }
+
+    if (aboutMe) {
+      updateData.aboutMe = aboutMe;
+    }
+
+    if (name || password || photo || aboutMe) {
+      const row = await userModel
+        .findOneAndUpdate({ _id: new Types.ObjectId(id) }, updateData, { returnDocument: "after" })
+        .exec();
+
+      if (row) {
+        return convertUserDocToUser(row);
+      }
+    }
+
+    return null;
   },
 };
