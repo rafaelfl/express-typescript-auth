@@ -14,6 +14,7 @@ export const messages = {
   EXISTING_EMAIL: "User with given email already exists",
   ACCOUNT_CREATED: "Account registered sucessfully",
   NOT_LOGGED: "Account not logged in",
-  USER_NOT_FOUND: "User not found",
+  USER_NOT_FOUND: "User(s) not found",
   USER_NOT_UPDATED: "User not updated",
+  UNABLE_DELETE_USER: "Unable to delete the current user",
 };

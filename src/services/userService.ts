@@ -58,6 +58,16 @@ export const userService = {
     return convertUserDocToUser(userDoc);
   },
 
+  findAllUsers: async () => {
+    const userDoc = await userModel.find().exec();
+
+    if (!userDoc) {
+      return null;
+    }
+
+    return userDoc.map(doc => convertUserDocToUser(doc));
+  },
+
   findUserById: async (id: string) => {
     const userDoc = await userModel.findOne({ _id: new Types.ObjectId(id) }).exec();
 
@@ -104,5 +114,15 @@ export const userService = {
     }
 
     return null;
+  },
+
+  deleteUserById: async (id: string) => {
+    const userDoc = await userModel.findOneAndDelete({ _id: new Types.ObjectId(id) }).exec();
+
+    if (!userDoc) {
+      return null;
+    }
+
+    return convertUserDocToUser(userDoc);
   },
 };

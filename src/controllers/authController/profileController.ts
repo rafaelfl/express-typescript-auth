@@ -12,13 +12,15 @@ const profileController = {
       const { userId } = req;
 
       if (!userId) {
+        logger.error(messages.CANNOT_RETRIEVE_USER_DATA);
         throw createHttpError(403, messages.CANNOT_RETRIEVE_USER_DATA);
       }
 
       const user = await userService.findUserById(userId);
 
       if (!user) {
-        throw createHttpError(403, messages.USER_NOT_FOUND);
+        logger.error(messages.USER_NOT_FOUND);
+        throw createHttpError(404, messages.USER_NOT_FOUND);
       }
 
       // return user data
@@ -47,16 +49,28 @@ const profileController = {
       const { userId } = req;
 
       if (!userId) {
+        logger.error(messages.CANNOT_RETRIEVE_USER_DATA);
         throw createHttpError(403, messages.CANNOT_RETRIEVE_USER_DATA);
       }
 
       const { name, password, photo, aboutMe } = req.body;
 
-      const hash = await hashPassword(password);
+      let hash: string | undefined;
 
-      const user = await userService.findAndUpdateUserById(userId, name, hash, photo, aboutMe);
+      if (password) {
+        hash = await hashPassword(password);
+      }
 
-      if (!user) {
+      const updatedUser = await userService.findAndUpdateUserById(
+        userId,
+        name,
+        hash,
+        photo,
+        aboutMe,
+      );
+
+      if (!updatedUser) {
+        logger.error(messages.USER_NOT_UPDATED);
         return sendError(res, createHttpError(400, messages.USER_NOT_UPDATED));
       }
 
@@ -64,12 +78,12 @@ const profileController = {
       return sendResponse(
         res,
         {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          photo: user.photo,
-          aboutMe: user.aboutMe,
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          photo: updatedUser.photo,
+          aboutMe: updatedUser.aboutMe,
         },
         200,
       );

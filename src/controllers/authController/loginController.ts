@@ -90,8 +90,9 @@ const loginController = asyncWrapper(async (req: Request, res: Response, next: N
 
     logger.error(error.message);
 
+    // replace the default error response
     if (error.message === messages.INVALID_TOKEN || error.message === messages.NO_AUTH_TOKEN) {
-      return sendError(res, createHttpError(403, error));
+      return sendError(res, createHttpError(401, error));
     }
 
     return sendError(res, error);
