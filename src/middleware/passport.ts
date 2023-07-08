@@ -52,9 +52,6 @@ passport.use(
   ),
 );
 
-const jwtVerification = async (jwtPayload: JwtPayload, done: VerifiedCallback) =>
-  done(null, jwtPayload);
-
 passport.use(
   "jwt",
   new JwtStrategy(
@@ -82,7 +79,7 @@ passport.use(
         return done(err, false);
       }
 
-      return jwtVerification(jwtPayload, done);
+      return done(null, jwtPayload);
     },
   ),
 );
@@ -104,7 +101,7 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
       secretOrKey: config.refreshTokenPrivateKey,
     },
-    jwtVerification,
+    async (jwtPayload: JwtPayload, done: VerifiedCallback) => done(null, jwtPayload),
   ),
 );
 

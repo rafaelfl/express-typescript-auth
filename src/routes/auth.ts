@@ -19,4 +19,6 @@ router.post("/refresh", authVerifier.verifyRefreshToken, authController.refreshT
 
 router.post("/logout", authVerifier.verifyAccessToken, authController.logout);
 
+router.get("/profile", authVerifier.verifyAccessToken, authController.profile);
+
 export default router;

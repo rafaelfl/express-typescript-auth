@@ -199,6 +199,27 @@ const authController = {
     res.setHeader("Location", "/");
     return sendResponse(res, messages.SUCCESS_LOGOUT, 303);
   }),
+
+  profile: asyncWrapper(async (req: Request, res: Response) => {
+    const { userId } = req;
+
+    if (!userId) {
+      throw createError(403, messages.CANNOT_RETRIEVE_USER_DATA);
+    }
+
+    const user = await userService.findUserById(userId);
+
+    if (!user) {
+      throw createError(403, messages.USER_NOT_FOUND);
+    }
+
+    // return user data
+    return sendResponse(
+      res,
+      { id: user.id, name: user.name, email: user.email, role: user.role },
+      200,
+    );
+  }),
 };
 
 export default authController;
