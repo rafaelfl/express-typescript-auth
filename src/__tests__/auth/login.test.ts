@@ -208,6 +208,15 @@ describe("Auth Module", () => {
       );
     });
 
+    it("should return an error response because no database user matches the credentials", async () => {
+      mockingoose(userModel).toReturn(null, "findOne");
+
+      await request(app)
+        .post("/login")
+        .send({ email: "test@test.com", password: "mypassword" })
+        .expect(401, { success: false, message: "Invalid email or password" });
+    });
+
     it("should return an error response because the database access throwed an exception", async () => {
       mockingoose(userModel).toReturn(new Error("Error accessing the database"), "findOne");
 

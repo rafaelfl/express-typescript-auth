@@ -49,8 +49,8 @@ const profileController = {
       const { userId } = req;
 
       if (!userId) {
-        logger.error(messages.NO_AUTH_TOKEN);
-        throw createHttpError(403, messages.NO_AUTH_TOKEN);
+        logger.error(messages.INVALID_TOKEN);
+        throw createHttpError(403, messages.INVALID_TOKEN);
       }
 
       const { name, password, photo, aboutMe } = req.body;

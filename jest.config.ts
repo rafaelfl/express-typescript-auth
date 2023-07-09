@@ -30,6 +30,7 @@ const config: Config = {
     "src/index.ts",
     "src/helpers/logger.ts",
     "src/middleware/http-logger.ts",
+    "src/helpers/errorHandler",
     "src/types/express/*",
   ],
   coverageReporters: ["text", "lcov"],

@@ -8,7 +8,7 @@ jest.mock("redis", () => ({
   ...jest.requireActual("redis"),
   createClient: jest.fn(() => ({
     connect: jest.fn(),
-    on: jest.fn(),
+    on: jest.fn((_event, callback) => callback()),
     ping: jest.fn(),
     set: jest.fn(),
     get: jest.fn(),
