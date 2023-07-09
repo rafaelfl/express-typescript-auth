@@ -35,7 +35,10 @@
     "indent": "off",
     "arrow-body-style": ["warn", "as-needed"],
     "arrow-parens": ["error", "as-needed"],
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "jest/expect-expect": "off",
+    "jest/no-test-prefixes": "off",
+    "jest/no-disabled-tests": "off"
   },
   "overrides": [
     {

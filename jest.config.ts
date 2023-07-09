@@ -23,7 +23,7 @@ const config: Config = {
   transformIgnorePatterns: ["./node_modules/"],
   setupFilesAfterEnv: ["./jest.setup.ts"],
   setupFiles: ["dotenv/config"],
-  roots: ["<rootDir>"],
+  roots: ["<rootDir>/src"],
   collectCoverage: false,
   collectCoverageFrom: ["src/**/*.{js{,x},ts{,x}}"],
   coverageReporters: ["text", "lcov"],
