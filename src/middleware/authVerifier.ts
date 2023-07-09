@@ -13,19 +13,19 @@ export const authVerifier = {
       { session: false },
       (err: Error, jwtPayload: JwtPayload, info: { message: string }) => {
         if (err) {
-          next(createError(500, err));
+          return next(createError(500, err));
         }
 
         if (!jwtPayload) {
           const { message } = info;
-          next(createError(401, message));
+          return next(createError(401, message));
         }
 
         req.userId = jwtPayload.id;
         req.userRole = jwtPayload.role;
         req.tokenExp = jwtPayload.exp;
 
-        next();
+        return next();
       },
     )(req, res, next),
 
@@ -35,19 +35,19 @@ export const authVerifier = {
       { session: false },
       (err: Error, jwtPayload: JwtPayload, info: { message: string }) => {
         if (err) {
-          next(createError(500, err));
+          return next(createError(500, err));
         }
 
         if (!jwtPayload) {
           const { message } = info;
-          next(createError(403, message));
+          return next(createError(403, message));
         }
 
         req.userId = jwtPayload.id;
         req.userRole = jwtPayload.role;
         req.tokenExp = jwtPayload.exp;
 
-        next();
+        return next();
       },
     )(req, res, next),
 

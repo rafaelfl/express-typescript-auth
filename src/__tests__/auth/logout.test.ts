@@ -172,5 +172,51 @@ describe("Auth Module", () => {
         .set("Cookie", ["refreshToken=MyCurrentRefreshToken"])
         .expect(403, { success: false, message: "Error accessing database" });
     });
+
+    it("should return an error message in case an error occurs accessing Redis during token registration", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, {
+          id: USER_ID,
+          role: "user",
+          iat: 1688925811,
+          exp: 1688926411,
+        });
+      });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      redisClient.set.mockRejectedValue(new Error("Error accessing Redis"));
+
+      await request(app)
+        .post("/logout")
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .set("Cookie", ["refreshToken=MyCurrentRefreshToken"])
+        .expect(403, { success: false, message: "Error accessing Redis" });
+    });
+
+    it("should return an error message in case an error occurs accessing Redis during token verification", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, {
+          id: USER_ID,
+          role: "user",
+          iat: 1688925811,
+          exp: 1688926411,
+        });
+      });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      redisClient.get.mockRejectedValue(new Error("Error accessing Redis"));
+
+      await request(app)
+        .post("/logout")
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .set("Cookie", ["refreshToken=MyCurrentRefreshToken"])
+        .expect(500, { success: false, message: "Error accessing Redis" });
+    });
   });
 });

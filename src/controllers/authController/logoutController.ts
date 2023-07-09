@@ -19,7 +19,7 @@ const logoutController = asyncWrapper(async (req: Request, res: Response) => {
     await userTokenService.removeUserTokenByToken(refreshToken);
 
     if (accessToken) {
-      tokenBlackListService.addTokenToBlacklist(
+      await tokenBlackListService.addTokenToBlacklist(
         accessToken,
         tokenExp ?? convertTimeStrToMillisec(config.accessTokenExpiration),
       );
