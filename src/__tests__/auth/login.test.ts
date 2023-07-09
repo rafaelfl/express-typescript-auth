@@ -23,9 +23,6 @@ const USERTOKEN_ID = "8ca4af76384306089c1c30ba";
 
 jest.mock("jsonwebtoken", () => ({
   ...jest.requireActual("jsonwebtoken"),
-  // verify: jest.fn((token, secretOrPublicKey, options, callback) => {
-  //   return callback(null, {sub: 'user_id'});
-  // })
   sign: jest.fn((_payload: string | object | Buffer, secretOrPrivateKey: jwt.Secret) => {
     if (secretOrPrivateKey === "accesskey") {
       return ACCESS_TOKEN;
@@ -80,7 +77,7 @@ describe("Auth Module", () => {
         token: REFRESH_TOKEN,
         createdAt: new Date(),
       },
-      "create",
+      "$save",
     );
   });
 

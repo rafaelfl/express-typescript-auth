@@ -26,6 +26,12 @@ const config: Config = {
   roots: ["<rootDir>/src"],
   collectCoverage: false,
   collectCoverageFrom: ["src/**/*.{js{,x},ts{,x}}"],
+  coveragePathIgnorePatterns: [
+    "src/index.ts",
+    "src/helpers/logger.ts",
+    "src/middleware/http-logger.ts",
+    "src/types/express/*",
+  ],
   coverageReporters: ["text", "lcov"],
   coverageThreshold: {
     global: {

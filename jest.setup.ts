@@ -10,6 +10,10 @@ jest.mock("redis", () => ({
     connect: jest.fn(),
     on: jest.fn(),
     ping: jest.fn(),
+    set: jest.fn(),
+    get: jest.fn(),
+    expireAt: jest.fn(),
+    isReady: true,
   })),
 }));
 
