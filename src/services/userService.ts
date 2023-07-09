@@ -1,9 +1,7 @@
 import { Document, Types } from "mongoose";
-import createError from "http-errors";
 
 import userModel, { UserModel } from "../database/model/userModel";
 import { User, UserRoles } from "../types";
-import { messages } from "../constants";
 
 type UserDoc = Document<unknown, NonNullable<unknown>, UserModel> &
   Omit<
@@ -41,10 +39,6 @@ export const userService = {
       role,
     });
 
-    if (!userDoc) {
-      throw createError(500, messages.APP_SERVER_ERROR);
-    }
-
     return convertUserDocToUser(userDoc);
   },
 
@@ -60,10 +54,6 @@ export const userService = {
 
   findAllUsers: async () => {
     const userDoc = await userModel.find().exec();
-
-    if (!userDoc) {
-      return null;
-    }
 
     return userDoc.map(doc => convertUserDocToUser(doc));
   },

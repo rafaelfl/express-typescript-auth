@@ -19,8 +19,8 @@ const profileController = {
       const user = await userService.findUserById(userId);
 
       if (!user) {
-        logger.error(messages.USER_NOT_FOUND);
-        throw createHttpError(404, messages.USER_NOT_FOUND);
+        logger.error(messages.CANNOT_RETRIEVE_USER_DATA);
+        throw createHttpError(403, messages.CANNOT_RETRIEVE_USER_DATA);
       }
 
       // return user data
@@ -49,8 +49,8 @@ const profileController = {
       const { userId } = req;
 
       if (!userId) {
-        logger.error(messages.CANNOT_RETRIEVE_USER_DATA);
-        throw createHttpError(403, messages.CANNOT_RETRIEVE_USER_DATA);
+        logger.error(messages.NO_AUTH_TOKEN);
+        throw createHttpError(403, messages.NO_AUTH_TOKEN);
       }
 
       const { name, password, photo, aboutMe } = req.body;
@@ -70,8 +70,8 @@ const profileController = {
       );
 
       if (!updatedUser) {
-        logger.error(messages.USER_NOT_UPDATED);
-        return sendError(res, createHttpError(400, messages.USER_NOT_UPDATED));
+        logger.error(messages.UNABLE_UPDATE_USER);
+        return sendError(res, createHttpError(400, messages.UNABLE_UPDATE_USER));
       }
 
       // return user data

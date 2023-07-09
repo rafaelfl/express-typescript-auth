@@ -40,8 +40,8 @@ const adminController = {
       const user = await userService.findUserById(userId);
 
       if (!user) {
-        logger.error(messages.USER_NOT_FOUND);
-        return sendError(res, createHttpError(404, messages.USER_NOT_FOUND));
+        logger.error(messages.UNABLE_RETRIEVE_USER);
+        return sendError(res, createHttpError(404, messages.UNABLE_RETRIEVE_USER));
       }
 
       return sendResponse(
@@ -67,12 +67,6 @@ const adminController = {
   updateUser: asyncWrapper(async (req: Request, res: Response) => {
     try {
       const { userId } = req.params;
-
-      if (!userId) {
-        logger.error(messages.CANNOT_RETRIEVE_USER_DATA);
-        throw createHttpError(403, messages.CANNOT_RETRIEVE_USER_DATA);
-      }
-
       const { name, password, photo, aboutMe } = req.body;
 
       let hash: string | undefined;
@@ -90,8 +84,8 @@ const adminController = {
       );
 
       if (!updatedUser) {
-        logger.error(messages.USER_NOT_UPDATED);
-        return sendError(res, createHttpError(400, messages.USER_NOT_UPDATED));
+        logger.error(messages.UNABLE_UPDATE_USER);
+        return sendError(res, createHttpError(400, messages.UNABLE_UPDATE_USER));
       }
 
       // return user data
@@ -111,7 +105,7 @@ const adminController = {
       const error = err as Error;
 
       logger.error(error.message);
-      return sendError(res, createHttpError(403, error));
+      return sendError(res, error);
     }
   }),
 
@@ -120,14 +114,9 @@ const adminController = {
       const { userId: accountUserId } = req;
       const { userId } = req.params;
 
-      if (!userId) {
-        logger.error(messages.CANNOT_RETRIEVE_USER_DATA);
-        throw createHttpError(403, messages.CANNOT_RETRIEVE_USER_DATA);
-      }
-
       if (accountUserId === userId) {
-        logger.error(messages.UNABLE_DELETE_USER);
-        return sendError(res, createHttpError(409, messages.UNABLE_DELETE_USER));
+        logger.error(messages.CANT_DELETE_OWN_USER);
+        return sendError(res, createHttpError(409, messages.CANT_DELETE_OWN_USER));
       }
 
       const deletedUser = await userService.deleteUserById(userId);
@@ -160,11 +149,6 @@ const adminController = {
   getAllUsers: asyncWrapper(async (req: Request, res: Response) => {
     try {
       const users = await userService.findAllUsers();
-
-      if (!users) {
-        logger.error(messages.USER_NOT_FOUND);
-        return sendError(res, createHttpError(404, messages.USER_NOT_FOUND));
-      }
 
       return sendResponse(
         res,
