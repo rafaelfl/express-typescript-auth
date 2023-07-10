@@ -20,6 +20,9 @@ const NULL_RESULT_ACCESS_TOKEN = "null_access_token";
 
 const DECODING_TOKEN_ERROR_MESSAGE = "Error decoding access token";
 
+const IAT = 1688925811;
+const EXP = 1688926411;
+
 jest.mock("jsonwebtoken", () => ({
   ...jest.requireActual("jsonwebtoken"),
   verify: jest.fn((token, _secretOrPublicKey, _options, callback) => {
@@ -82,9 +85,6 @@ describe("Auth Module", () => {
     });
 
     it("should access a protected route if a valid token is sent", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -127,16 +127,19 @@ describe("Auth Module", () => {
     });
 
     it("should return a token decoding error when a null jwt payload is retrieved", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, null);
+      });
+
       await request(app)
         .get("/api/v1/adminProtected")
         .set({ Authorization: `Bearer ${NULL_RESULT_ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(401, { success: false, message: "Error decoding access token" });
+        .expect(401, { success: false, message: "Invalid token" });
     });
 
     it("should access an admin protected route if a valid token is sent", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -158,9 +161,6 @@ describe("Auth Module", () => {
     });
 
     it("should return an access denied error when accessing an admin protected route without the admin role", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {

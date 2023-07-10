@@ -25,6 +25,9 @@ const USERTOKEN_ID = "8ca4af76384306089c1c30ba";
 
 const DECODING_TOKEN_ERROR_MESSAGE = "Error decoding access token";
 
+const IAT = 1688925811;
+const EXP = 1688926411;
+
 const USER_OBJ = {
   id: USER_ID,
   name: "Test User1",
@@ -98,6 +101,10 @@ describe("Auth Module", () => {
     spyRedisSet.mockClear();
     spyRedisExpireAt.mockClear();
     spyRedisGet.mockClear();
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    redisClient.isReady = true;
   });
 
   describe("GET /profile", () => {
@@ -120,9 +127,6 @@ describe("Auth Module", () => {
     });
 
     it("should return a successful profile data response", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -147,9 +151,6 @@ describe("Auth Module", () => {
     });
 
     it("should return an authorization error in case the userId field from jwtPayload is null", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -174,9 +175,6 @@ describe("Auth Module", () => {
     });
 
     it("should return an authorization error if no user was found in the database", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -202,10 +200,7 @@ describe("Auth Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return an authorization error the user token is blocked in Redis", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
+    it("should return an authorization error the user token is blacklisted in Redis", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -231,18 +226,36 @@ describe("Auth Module", () => {
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
+
+    it("should return a successful profile data response, in case the access token is correct and Redis isn't ready (i.e., the token is not considered in blacklist)", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, {
+          id: USER_ID,
+          role: "user",
+          iat: IAT,
+          exp: EXP,
+        });
+      });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      redisClient.isReady = false;
+
+      await request(app)
+        .get("/profile")
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .set("Cookie", [`refreshToken=${REFRESH_TOKEN}`])
+        .expect(200, { success: true, data: USER_OBJ });
+    });
   });
 
   describe("PATCH /profile", () => {
     it("should return a successful profile data response after updating the user name", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       const UPDATED_USER = {
         name: "Updated Name",
         email: "updated@test.com",
-        // password: "123456",
-        // confirmPassword: "123456",
         photo: "https://cdn.britannica.com/77/81277-050-2A6A35B2/Adelie-penguin.jpg",
         aboutMe: "Updated bio",
       };
@@ -285,16 +298,56 @@ describe("Auth Module", () => {
           data: { ...UPDATED_USER, id: USER_ID },
         });
 
-      // .then(doc => {
-      //   expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
+      expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
+    });
+
+    it("should return an error message in case the password and confirmation don't match", async () => {
+      const UPDATED_USER = {
+        name: "Updated Name",
+        email: "updated@test.com",
+        photo: "https://cdn.britannica.com/77/81277-050-2A6A35B2/Adelie-penguin.jpg",
+        aboutMe: "Updated bio",
+      };
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, {
+          id: USER_ID,
+          role: "user",
+          iat: IAT,
+          exp: EXP,
+        });
+      });
+
+      mockingoose(userModel).toReturn(
+        {
+          _id: USER_ID,
+          ...UPDATED_USER,
+          __v: 0,
+        },
+        "findOneAndUpdate",
+      );
+
+      const userFound = await userModel.findOneAndUpdate({ _id: USER_ID });
+
+      const resultUserObject = {
+        ...UPDATED_USER,
+      };
+
+      expect(userFound).toMatchObject(resultUserObject);
+
+      await request(app)
+        .patch("/profile")
+        .send({ ...UPDATED_USER, password: "123456", passwordConfirmation: "abcdef" })
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .set("Cookie", [`refreshToken=${REFRESH_TOKEN}`])
+        .expect(422, { success: false, errors: [{ msg: "Passwords do not match" }] });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
     it("should return a token decoding error when a null user id is retrieved", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -313,9 +366,6 @@ describe("Auth Module", () => {
     });
 
     it("should return a bad request error if no user was found in the database during the update", async () => {
-      const IAT = 1688925811;
-      const EXP = 1688926411;
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {

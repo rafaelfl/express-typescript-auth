@@ -17,8 +17,8 @@ export const authVerifier = {
         }
 
         if (!jwtPayload) {
-          const { message } = info;
-          return next(createError(401, message));
+          const { message } = info || {};
+          return next(createError(401, message ?? messages.INVALID_TOKEN));
         }
 
         req.userId = jwtPayload.id;
