@@ -149,6 +149,40 @@ describe("Auth Module", () => {
       expect(redisClient.expireAt).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`, 10000); // 10s
     });
 
+    it("should return successful redirection with the default 1 minute access token config in case the exp field is not available and no error occurs on logout", async () => {
+      config.accessTokenExpiration = "1m";
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, {
+          id: USER_ID,
+          role: "user",
+          iat: 1688925811,
+        });
+      });
+
+      mockingoose(userTokenModel).toReturn(
+        {
+          _id: USERTOKEN_ID,
+          userId: USER_ID,
+          token: REFRESH_TOKEN,
+          createdAt: new Date(),
+        },
+        "findOneAndDelete",
+      );
+
+      await request(app)
+        .post("/logout")
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .set("Cookie", ["refreshToken=MyCurrentRefreshToken"])
+        .expect(303)
+        .expect("Location", "/");
+
+      expect(redisClient.set).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`, ACCESS_TOKEN);
+      expect(redisClient.expireAt).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`, 60000); // 1m
+    });
+
     it("should return an error message in case an error occurs accessing the database", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
