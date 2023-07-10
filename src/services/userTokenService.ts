@@ -1,9 +1,7 @@
 import { Document, Types } from "mongoose";
-import createError from "http-errors";
 
 import userTokenModel, { UserTokenModel } from "../database/model/userTokenModel";
 import { UserToken } from "../types";
-import { messages } from "../constants";
 
 type UserTokenDoc = Document<unknown, NonNullable<unknown>, UserTokenModel> &
   Omit<
@@ -29,22 +27,6 @@ export const userTokenService = {
       userId: new Types.ObjectId(userId),
       token,
     });
-
-    if (!userTokenDoc) {
-      throw createError(500, messages.APP_SERVER_ERROR);
-    }
-
-    return convertUserDocToUserToken(userTokenDoc);
-  },
-
-  findUserTokenById: async (userId: string) => {
-    const userTokenDoc = await userTokenModel
-      .findOne({ userId: new Types.ObjectId(userId) })
-      .exec();
-
-    if (!userTokenDoc) {
-      return null;
-    }
 
     return convertUserDocToUserToken(userTokenDoc);
   },

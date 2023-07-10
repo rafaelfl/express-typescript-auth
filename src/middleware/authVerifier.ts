@@ -34,13 +34,9 @@ export const authVerifier = {
       "jwt-refresh",
       { session: false },
       (err: Error, jwtPayload: JwtPayload, info: { message: string }) => {
-        if (err) {
-          return next(createError(500, err));
-        }
-
         if (!jwtPayload) {
-          const { message } = info;
-          return next(createError(403, message));
+          const { message } = info || {};
+          return next(createError(403, message ?? messages.INVALID_TOKEN));
         }
 
         req.userId = jwtPayload.id;
