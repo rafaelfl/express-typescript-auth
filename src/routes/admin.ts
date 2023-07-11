@@ -6,7 +6,7 @@ import { validators } from "../middleware/validators";
 
 const router = Router();
 
-router.get(
+router.post(
   "/createAccount",
   authVerifier.verifyAccessToken,
   authVerifier.adminOnly,

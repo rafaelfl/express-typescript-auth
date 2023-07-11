@@ -55,7 +55,7 @@ export const validators = {
 
   createAccountValidationRules: [
     ...userResourceValidator,
-    body("role", "'role' is required and must have a valid value").isString().isIn(USER_ROLES),
+    body("role", "'role' is required and must have a valid value").isIn(USER_ROLES),
   ],
 
   updateProfileValidationRules: [...optionalFieldsUserResourceValidator],
