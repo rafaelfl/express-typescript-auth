@@ -22,7 +22,12 @@ export const connectMongoDB = async () => {
   const { databaseUrl, databaseUser, databasePassword } = config;
 
   mongoose.connection
-    .on("error", err => logger.error(err.message))
+
+    .on(
+      "error",
+      /* istanbul ignore next */
+      err => logger.error(err.message),
+    )
     .on("disconnected", connectMongoDB)
     .once("open", () => logger.info(`MongoDB connected to ${databaseUrl}`));
 

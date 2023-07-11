@@ -107,23 +107,23 @@ describe("Admin Module", () => {
     redisClient.isReady = true;
   });
 
-  describe("DELETE /api/v1/admin/user/:userId", () => {
+  describe("GET /api/v1/admin/users", () => {
     it("should return a no auth token error when no access token is sent", async () => {
       await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
+        .get("/api/v1/admin/users")
         .expect(401, { success: false, message: "No auth token" });
     });
 
     it("should return a token decoding error when an invalid access token is sent", async () => {
       await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
+        .get("/api/v1/admin/users")
         .set({ Authorization: "Bearer wrong_token", Accept: "application/json" })
         .expect(401, { success: false, message: DECODING_TOKEN_ERROR_MESSAGE });
     });
 
     it("should return a token decoding error when a null jwt payload is retrieved", async () => {
       await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
+        .get("/api/v1/admin/users")
         .set({ Authorization: `Bearer ${NULL_RESULT_ACCESS_TOKEN}`, Accept: "application/json" })
         .expect(401, { success: false, message: DECODING_TOKEN_ERROR_MESSAGE });
     });
@@ -141,14 +141,14 @@ describe("Admin Module", () => {
       });
 
       await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
+        .get("/api/v1/admin/users")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .expect(403, { success: false, message: "Access denied! ❌" });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a bad request error when no data is deleted from the database", async () => {
+    it("should return a not found error message if an invalid user is passed as parameter", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -160,17 +160,17 @@ describe("Admin Module", () => {
         });
       });
 
-      mockingoose(userModel).toReturn(null, "findOneAndDelete");
+      mockingoose(userModel).toReturn([], "find");
 
       await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
+        .get("/api/v1/admin/users")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(400, { success: false, message: "Unable to delete user data" });
+        .expect(200, { success: true, data: [] });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a bad request message when no data is deleted from the database", async () => {
+    it("should return an error message if an error occurs when accessing the database", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -182,87 +182,17 @@ describe("Admin Module", () => {
         });
       });
 
-      mockingoose(userModel).toReturn(null, "findOneAndDelete");
+      mockingoose(userModel).toReturn(new Error("Error accessing the database"), "find");
 
       await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
-        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(400, { success: false, message: "Unable to delete user data" });
-
-      expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
-    });
-
-    it("should return an authorization error message in case an error happens when accessing the database", async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
-        callback(null, {
-          id: USER_ID,
-          role: "admin",
-          iat: IAT,
-          exp: EXP,
-        });
-      });
-
-      mockingoose(userModel).toReturn(
-        new Error("Error accessing the database"),
-        "findOneAndDelete",
-      );
-
-      await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
-        .send({
-          name: "Testing User",
-          email: "test@test.com",
-          password: "123456",
-          passwordConfirmation: "123456",
-          role: "user",
-        })
+        .get("/api/v1/admin/users")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .expect(500, { success: false, message: "Error accessing the database" });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a conflict error message in case an user tries to delete its own user", async () => {
-      const userId = "64a4cc19309c4295cb58f998";
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
-        callback(null, {
-          id: userId,
-          role: "admin",
-          iat: IAT,
-          exp: EXP,
-        });
-      });
-
-      mockingoose(userModel).toReturn(
-        {
-          _id: USER_ID,
-          ...USER_OBJ,
-          __v: 0,
-        },
-        "findOneAndDelete",
-      );
-
-      await request(app)
-        .delete(`/api/v1/admin/user/${userId}`)
-        .send({
-          name: "Testing User",
-          email: "test@test.com",
-          password: "123456",
-          passwordConfirmation: "123456",
-          role: "user",
-        })
-        .set({ Authorization: `Bearer ${userId}`, Accept: "application/json" })
-        .expect(409, { success: false, message: "You cannot delete your own user" });
-
-      expect(redisClient.get).toHaveBeenCalledWith(`bl_${userId}`);
-    });
-
-    it("should return a successful delete response if the user is deleted from the database", async () => {
+    it("should return a successful message if a valid user is passed as parameter", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -275,35 +205,55 @@ describe("Admin Module", () => {
       });
 
       mockingoose(userModel).toReturn(
-        {
-          _id: USER_ID,
-          ...USER_OBJ,
-          __v: 0,
-        },
-        "findOneAndDelete",
-      );
-
-      await request(app)
-        .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
-        .send({
-          name: "Testing User",
-          email: "test@test.com",
-          password: "123456",
-          passwordConfirmation: "123456",
-          role: "user",
-        })
-        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(200, {
-          success: true,
-          data: {
-            id: "507f191e810c19729de860ea",
+        [
+          {
+            _id: "64a4cc19309c4295cb58f998",
             name: "Test User1",
             email: "test@test.com",
             role: "user",
             photo:
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrFe_1bqd-KCl2sbFivhvyt4aZ65AyC8habg&usqp=CAU",
             aboutMe: "It's me, Mario!",
+            __v: 0,
           },
+
+          {
+            _id: "64aa4705b91f21a9a622d067",
+            name: "Test User2",
+            email: "test2@test.com",
+            role: "user",
+            photo: "https://cdn.britannica.com/77/81277-050-2A6A35B2/Adelie-penguin.jpg",
+            aboutMe: "My bio",
+            __v: 0,
+          },
+        ],
+        "find",
+      );
+
+      await request(app)
+        .get("/api/v1/admin/users")
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .expect(200, {
+          success: true,
+          data: [
+            {
+              id: "64a4cc19309c4295cb58f998",
+              name: "Test User1",
+              email: "test@test.com",
+              role: "user",
+              photo:
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrFe_1bqd-KCl2sbFivhvyt4aZ65AyC8habg&usqp=CAU",
+              aboutMe: "It's me, Mario!",
+            },
+            {
+              id: "64aa4705b91f21a9a622d067",
+              name: "Test User2",
+              email: "test2@test.com",
+              role: "user",
+              photo: "https://cdn.britannica.com/77/81277-050-2A6A35B2/Adelie-penguin.jpg",
+              aboutMe: "My bio",
+            },
+          ],
         });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);

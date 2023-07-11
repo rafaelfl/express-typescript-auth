@@ -148,7 +148,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a missing fields validation error when no data is sent and using an admin profile access token", async () => {
+    it("should return a missing fields validation error when no data is sent", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -176,7 +176,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a validation error when invalid input fields are sent using an admin profile access token", async () => {
+    it("should return a validation error when invalid input fields", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -205,7 +205,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return an existing email error message in case the email exists and it is using an admin profile access token", async () => {
+    it("should return an existing email error message in case the email exists", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -235,7 +235,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return an authorization error message in case an error happens when accessing the database and it is using an admin profile access token", async () => {
+    it("should return an authorization error message in case an error happens when accessing the database", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -258,7 +258,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a successful creation response if valid data is sent and using an admin profile access token", async () => {
+    it("should return a successful creation response if valid data is sent", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {

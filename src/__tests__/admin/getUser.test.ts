@@ -107,7 +107,7 @@ describe("Admin Module", () => {
     redisClient.isReady = true;
   });
 
-  describe("POST /api/v1/admin/user", () => {
+  describe("GET /api/v1/admin/user", () => {
     it("should return a no auth token error when no access token is sent", async () => {
       await request(app)
         .get("/api/v1/admin/user/123")
@@ -148,7 +148,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a not found error message if an invalid user is passed as parameter and using an admin profile access token", async () => {
+    it("should return a not found error message if an invalid user is passed as parameter", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -170,7 +170,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return an error message if an error occurs when accessing the database and using an admin profile access token", async () => {
+    it("should return an error message if an error occurs when accessing the database", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -192,7 +192,7 @@ describe("Admin Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a successful message if a valid user is passed as parameter and using an admin profile access token", async () => {
+    it("should return a successful message if a valid user is passed as parameter", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {

@@ -22,8 +22,6 @@ const adminController = {
 
       const hash = await hashPassword(password);
 
-      console.log("  >>> hash:", hash);
-
       await userService.create(name, email, hash, role);
 
       return sendResponse(res, messages.ACCOUNT_CREATED, 201);
@@ -115,9 +113,6 @@ const adminController = {
     try {
       const { userId: accountUserId } = req;
       const { userId } = req.params;
-
-      console.log("  >>>> accountUserId", accountUserId);
-      console.log("  >>>> userId", userId);
 
       if (accountUserId === userId) {
         logger.error(messages.CANT_DELETE_OWN_USER);

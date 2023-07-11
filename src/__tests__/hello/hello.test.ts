@@ -19,5 +19,12 @@ describe("Hello Module", () => {
         .get("/")
         .expect(200, { success: true, data: { msg: "Hello world" } });
     });
+
+    it("should return a 404 error in case the path doesn't exist", async () => {
+      await request(app).get("/dontexist").expect(404, {
+        success: false,
+        message: "Not Found. Try using /api/v1 to access the api resource",
+      });
+    });
   });
 });
