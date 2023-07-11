@@ -179,6 +179,34 @@ describe("Auth Module", () => {
       expect(loggerWarn).not.toHaveBeenCalled();
     });
 
+    it("should return a successful sign-in message, rotating the refresh token and returning the access token, even in case the existing token is not successfully deleted", async () => {
+      const docReturnedAndDeleted = {
+        _id: USERTOKEN_ID,
+        userId: USER_ID,
+        token: "MyCurrentRefreshToken",
+        createdAt: new Date(),
+      };
+
+      mockingoose(userTokenModel).toReturn(docReturnedAndDeleted, "findOne");
+      mockingoose(userTokenModel).toReturn(null, "findOneAndDelete");
+
+      await request(app)
+        .post("/login")
+        .set("Cookie", ["refreshToken=MyCurrentRefreshToken"])
+        .send({ email: "test@test.com", password: "mypassword" })
+        .expect(201, { success: true, data: { token: ACCESS_TOKEN } })
+        .expect(
+          "set-cookie",
+          new RegExp(
+            `refreshToken=${REFRESH_TOKEN}; Max-Age=86400; Domain=localhost; Path=/`,
+            "gi",
+          ),
+        )
+        .expect("set-cookie", /HttpOnly; Secure; SameSite=None/);
+
+      expect(loggerWarn).not.toHaveBeenCalled();
+    });
+
     it("should return a successful sign-in message if correct credentials are used, but must clear existing credentials in case an old valid refresh token is sent", async () => {
       mockingoose(userTokenModel).toReturn(null, "findOne");
       mockingoose(userTokenModel).toReturn(
