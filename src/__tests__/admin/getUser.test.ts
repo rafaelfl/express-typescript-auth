@@ -107,23 +107,23 @@ describe("Admin Module", () => {
     redisClient.isReady = true;
   });
 
-  describe("POST /api/v1/admin/createAccount", () => {
+  describe("POST /api/v1/admin/user", () => {
     it("should return a no auth token error when no access token is sent", async () => {
       await request(app)
-        .post("/api/v1/admin/createAccount")
+        .get("/api/v1/admin/user/123")
         .expect(401, { success: false, message: "No auth token" });
     });
 
     it("should return a token decoding error when an invalid access token is sent", async () => {
       await request(app)
-        .post("/api/v1/admin/createAccount")
+        .get("/api/v1/admin/user/123")
         .set({ Authorization: "Bearer wrong_token", Accept: "application/json" })
         .expect(401, { success: false, message: DECODING_TOKEN_ERROR_MESSAGE });
     });
 
     it("should return a token decoding error when a null jwt payload is retrieved", async () => {
       await request(app)
-        .post("/api/v1/admin/createAccount")
+        .get("/api/v1/admin/user/123")
         .set({ Authorization: `Bearer ${NULL_RESULT_ACCESS_TOKEN}`, Accept: "application/json" })
         .expect(401, { success: false, message: DECODING_TOKEN_ERROR_MESSAGE });
     });
@@ -141,14 +141,14 @@ describe("Admin Module", () => {
       });
 
       await request(app)
-        .post("/api/v1/admin/createAccount")
+        .get("/api/v1/admin/user/123")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .expect(403, { success: false, message: "Access denied! ❌" });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a missing fields validation error when no data is sent and using an admin profile access token", async () => {
+    it("should return a not found error message if an invalid user is passed as parameter and using an admin profile access token", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -160,23 +160,17 @@ describe("Admin Module", () => {
         });
       });
 
+      mockingoose(userModel).toReturn(null, "findOne");
+
       await request(app)
-        .post("/api/v1/admin/createAccount")
+        .get("/api/v1/admin/user/64a4cc19309c4295cb58f998")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(422, {
-          success: false,
-          errors: [
-            { msg: "'name' is required and must exceed 5 characters" },
-            { msg: "Invalid email address" },
-            { msg: "'password' is required and must exceed 5 characters" },
-            { msg: "'role' is required and must have a valid value" },
-          ],
-        });
+        .expect(404, { success: false, message: "Unable to retrieve user data" });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a validation error when invalid input fields are sent using an admin profile access token", async () => {
+    it("should return an error message if an error occurs when accessing the database and using an admin profile access token", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -188,24 +182,17 @@ describe("Admin Module", () => {
         });
       });
 
+      mockingoose(userModel).toReturn(new Error("Error accessing the database"), "findOne");
+
       await request(app)
-        .post("/api/v1/admin/createAccount")
-        .send({ name: "Test", email: "test", password: 123, role: "anything" })
+        .get("/api/v1/admin/user/64a4cc19309c4295cb58f998")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(422, {
-          success: false,
-          errors: [
-            { msg: "'name' is required and must exceed 5 characters" },
-            { msg: "Invalid email address" },
-            { msg: "'password' is required and must exceed 5 characters" },
-            { msg: "'role' is required and must have a valid value" },
-          ],
-        });
+        .expect(500, { success: false, message: "Error accessing the database" });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return an existing email error message in case the email exists and it is using an admin profile access token", async () => {
+    it("should return a successful message if a valid user is passed as parameter and using an admin profile access token", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -227,65 +214,14 @@ describe("Admin Module", () => {
       );
 
       await request(app)
-        .post("/api/v1/admin/createAccount")
-        .send({ name: "Testing User", email: "test@test.com", password: "123456", role: "user" })
+        .get("/api/v1/admin/user/64a4cc19309c4295cb58f998")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(409, { success: false, message: "User with given email already exists" });
-
-      expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
-    });
-
-    it("should return an authorization error message in case an error happens when accessing the database and it is using an admin profile access token", async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
-        callback(null, {
-          id: USER_ID,
-          role: "admin",
-          iat: IAT,
-          exp: EXP,
+        .expect(200, {
+          success: true,
+          data: {
+            ...USER_OBJ,
+          },
         });
-      });
-
-      mockingoose(userModel).toReturn(new Error("Error accessing the database"), "findOne");
-
-      await request(app)
-        .post("/api/v1/admin/createAccount")
-        .send({ name: "Testing User", email: "test@test.com", password: "123456", role: "user" })
-        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(500, { success: false, message: "Error accessing the database" });
-
-      expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
-    });
-
-    it("should return a successful creation response if valid data is sent and using an admin profile access token", async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
-        callback(null, {
-          id: USER_ID,
-          role: "admin",
-          iat: IAT,
-          exp: EXP,
-        });
-      });
-
-      mockingoose(userModel).toReturn(null, "findOne");
-
-      mockingoose(userModel).toReturn(
-        {
-          _id: USER_ID,
-          ...USER_OBJ,
-          __v: 0,
-        },
-        "$save",
-      );
-
-      await request(app)
-        .post("/api/v1/admin/createAccount")
-        .send({ name: "Testing User", email: "test@test.com", password: "123456", role: "user" })
-        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(201, { success: true, data: "Account registered sucessfully" });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });

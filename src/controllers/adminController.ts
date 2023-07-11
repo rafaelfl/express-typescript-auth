@@ -22,6 +22,8 @@ const adminController = {
 
       const hash = await hashPassword(password);
 
+      console.log("  >>> hash:", hash);
+
       await userService.create(name, email, hash, role);
 
       return sendResponse(res, messages.ACCOUNT_CREATED, 201);
