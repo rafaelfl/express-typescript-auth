@@ -116,6 +116,9 @@ const adminController = {
       const { userId: accountUserId } = req;
       const { userId } = req.params;
 
+      console.log("  >>>> accountUserId", accountUserId);
+      console.log("  >>>> userId", userId);
+
       if (accountUserId === userId) {
         logger.error(messages.CANT_DELETE_OWN_USER);
         return sendError(res, createHttpError(409, messages.CANT_DELETE_OWN_USER));
