@@ -1,0 +1,581 @@
+openapi: 3.0.0
+
+info:
+  title: Authentication API
+  description: An authentication API with registration, sign in, sign out, profile and admin features
+  version: "1.0.0"
+  contact:
+    name: Rafael Fernandes Lopes
+    email: rafael.fernandes@gmail.com
+
+servers:
+  - url: https://express-typescript-auth.onrender.com
+    description: Production server
+
+  - url: http://localhost:{port}
+    description: Local development server
+    variables:
+      port:
+        default: "3000"
+
+paths:
+  /:
+    get:
+      summary: Hello endpoint
+      description: >
+        An open hello world endpoint
+
+      security: []
+
+      responses:
+        '200':
+          description: Return a hello world message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: The request success status
+                  data:
+                    type: object
+                    properties:
+                      msg:
+                        type: string
+                        description: Hello world string message
+                        example: Hello world
+
+  /login:
+    post:
+      summary: Login endpoint
+      description: >
+        This endpoint allows to perform a login and receive the refresh and access tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Login email
+                  example: rafael.fernandes@gmail.com
+                password:
+                  type: string
+                  description: Login password
+                  example: password
+      security: []
+
+      responses:
+        '201':
+          description: Return a successful sign in result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: Access token returned in the response body
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YTRjYzE5MzA5YzQyOTVjYjU4Zjk5OCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg5MTM0MTM0LCJleHAiOjE2ODkxMzQ3MzR9.R7DCLWkHh2lOWDRcwlOmf2ivEC3jg6JxZp6n2HPTjn8
+          headers: 
+            Set-Cookie:
+              schema: 
+                type: string
+                example: refreshToken=abcde12345; Max-Age=86400; Domain=localhost; Path=/; HttpOnly; Secure; SameSite=None
+
+        '401':
+          description: Return an unauthorized response in case login parameters are not valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Invalid email or password"
+
+        '422':
+          description: Return an unprocessable content response in case there are missing fields in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/MissingLoginFields'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Oops, something went wrong!"
+
+  /register:
+    post:
+      summary: User registration endpoint
+      description: >
+        This endpoint allows one to create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User name
+                  example: Rafael Fernandes Lopes
+                email:
+                  type: string
+                  description: User email
+                  example: rafael.fernandes@gmail.com
+                password:
+                  type: string
+                  description: User password
+                  example: password
+                passwordConfirmation:
+                  type: string
+                  description: User password confirmation
+                  example: password
+
+      security: []
+
+      responses:
+        '201':
+          description: Return a successful sign in result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: string
+                    description: Account registration message
+                    example: Account registered sucessfully
+
+        '409':
+          description: Return a conflict error message informing that the user email already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: User with given email already exists
+
+        '422':
+          description: Return an unprocessable content response in case there are missing fields in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/MissingRegisterFields'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Oops, something went wrong!"
+
+  /refresh:
+    post:
+      summary: Endpoint for refreshing the expired accessToken
+      description: >
+        This endpoint allows one generate a new access token in replacement to an expired one. In order to increase the security of the API, this endpoint also rotates the refresh token
+
+      security:
+        - refreshToken: []
+
+      responses:
+        '200':
+          description: Return a new access and refresh tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The new access token
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YTRjYzE5MzA5YzQyOTVjYjU4Zjk5OCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjg5MTM0MTM0LCJleHAiOjE2ODkxMzQ3MzR9.R7DCLWkHh2lOWDRcwlOmf2ivEC3jg6JxZp6n2HPTjn8
+          headers: 
+            Set-Cookie:
+              schema: 
+                type: string
+                example: refreshToken=abcde12345; Max-Age=86400; Domain=localhost; Path=/; HttpOnly; Secure; SameSite=None
+
+        '403':
+          description: Return a forbidden error in case an error occurs processing the refresh
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Refresh token unavailable. You need to perform the sign in again."
+
+  /logout:
+    post:
+      summary: Endpoint for signing out from the authentication API
+      description: >
+        This endpoint allows one to logout from this application, invalidating both refresh and access tokens
+
+      security: [ { refreshToken: [] }, { accessToken: []  } ]
+
+      responses:
+        '303':
+          description: Perform the user logout and redirect to the home page
+
+          headers: 
+            Location:
+              schema: 
+                type: string
+                example: /
+
+        '403':
+          description: Return a forbidden error in case an error occurs processing the logout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Refresh token unavailable. You need to perform the sign in again."
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Oops, something went wrong!"
+
+  /profile:
+    get:
+      summary: Get user profile data in case the user is signed in
+      description: >
+        This endpoint allows one to get it's user profile data, as well as to check if the session is currently signed in
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Return the user's profile data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (sucha as, invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error decoding access token"
+
+        '403':
+          description: Return a forbidden error in case an error occurs processing the request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "It was not possible to retrieve user data"
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Oops, something went wrong!"
+
+    patch:
+      summary: Update user profile data of a signed in user
+      description: >
+        This endpoint allows one to update it's user profile data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  description: User name
+                  example: Rafael Fernandes Lopes
+                password:
+                  type: string
+                  description: User password
+                  example: password
+                passwordConfirmation:
+                  type: string
+                  description: User password confirmation. It is only mandatory if a valid password field is provided
+                  example: password
+                photo:
+                  type: string
+                  description: User's photo URL
+                  example: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrFe_1bqd-KCl2sbFivhvyt4aZ65AyC8habg&usqp=CAU"
+                aboutMe:
+                  type: string
+                  description: User's bio
+                  example: "It's me, Mario!"
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Return the user's profile data if the user has been successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        '400':
+          description: Return an bad request error in case it was not possible to update the user profile data in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unable to update user data"
+                    
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (sucha as, invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error decoding access token"
+
+        '422':
+          description: Return an unprocessable content response in case there are missing fields in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/MissingUpdateProfileFields'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Oops, something went wrong!"
+
+
+components:
+  securitySchemes:
+    refreshToken:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+
+    accessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    MissingLoginFields:
+      type: object
+      required:
+        - success
+        - errors
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              msg:
+                type: string
+                description: Description of the returned error
+                example: Invalid email address
+          example:
+            - { msg: "Invalid email address" }
+            - { msg: "'password' is required and must exceed 5 characters" }
+
+    MissingUpdateProfileFields:
+      type: object
+      required:
+        - success
+        - errors
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              msg:
+                type: string
+                description: Description of the returned error
+                example: "Passwords do not match"
+          example:
+            - { msg: "Passwords do not match" }
+
+    MissingRegisterFields:
+      type: object
+      required:
+        - success
+        - errors
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              msg:
+                type: string
+                description: Description of the returned error
+                example: Invalid email address
+          example:
+            - { msg: "'name' is required and must exceed 5 characters" }
+            - { msg: "Invalid email address" }
+            - { msg: "'password' is required and must exceed 5 characters" }
+            - { msg: "Passwords do not match" }
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user id
+          example: 64a4cc19309c4295cb58f998
+        name:
+          type: string
+          description: User's name
+          example: Rafael Fernandes Lopes
+        email:
+          type: string
+          description: User's email
+          example: rafael.fernandes@gmail.com
+        role:
+          type: string
+          enum: [
+            "user",
+            "admin"
+          ]
+          description: User's permission role
+          example: user
+        photo:
+          type: string
+          description: User's photo URL
+          example: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrFe_1bqd-KCl2sbFivhvyt4aZ65AyC8habg&usqp=CAU"
+        aboutMe:
+          type: string
+          description: User's bio
+          example: "It's me, Mario!"

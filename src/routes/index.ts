@@ -16,7 +16,6 @@ const routes = (app: Application) => {
 
   // use the same route for both /hello and /api/v1/hello
   app.use(helloRoutes);
-  app.use(apiPrefix, helloRoutes);
 
   // authentication routes
   app.use(authRoutes);

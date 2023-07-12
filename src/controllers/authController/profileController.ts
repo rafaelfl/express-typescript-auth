@@ -50,7 +50,7 @@ const profileController = {
 
       if (!userId) {
         logger.error(messages.INVALID_TOKEN);
-        throw createHttpError(403, messages.INVALID_TOKEN);
+        throw createHttpError(401, messages.INVALID_TOKEN);
       }
 
       const { name, password, photo, aboutMe } = req.body;
@@ -91,7 +91,7 @@ const profileController = {
       const error = err as Error;
 
       logger.error(error.message);
-      return sendError(res, createHttpError(403, error));
+      return sendError(res, error);
     }
   }),
 };

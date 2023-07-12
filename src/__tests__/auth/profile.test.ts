@@ -347,6 +347,40 @@ describe("Auth Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
+    it("should return an internal server error in case an exception occurs accessing the database", async () => {
+      const UPDATED_USER = {
+        name: "Updated Name",
+        email: "updated@test.com",
+        photo: "https://cdn.britannica.com/77/81277-050-2A6A35B2/Adelie-penguin.jpg",
+        aboutMe: "Updated bio",
+      };
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
+        callback(null, {
+          id: USER_ID,
+          role: "user",
+          iat: IAT,
+          exp: EXP,
+        });
+      });
+
+      mockingoose(userModel).toReturn(
+        new Error("Error accessing the database"),
+        "findOneAndUpdate",
+      );
+
+      await request(app)
+        .patch("/profile")
+        .send({ ...UPDATED_USER, password: "123456", passwordConfirmation: "123456" })
+        .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
+        .set("Cookie", [`refreshToken=${REFRESH_TOKEN}`])
+        .expect(500, { success: false, message: "Error accessing the database" });
+
+      expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
+    });
+
     it("should return a token decoding error when a null user id is retrieved", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -362,7 +396,7 @@ describe("Auth Module", () => {
       await request(app)
         .patch("/profile")
         .set({ Authorization: `Bearer ${NULL_RESULT_ACCESS_TOKEN}`, Accept: "application/json" })
-        .expect(403, { success: false, message: "Invalid token" });
+        .expect(401, { success: false, message: "Invalid token" });
     });
 
     it("should return a bad request error if no user was found in the database during the update", async () => {
