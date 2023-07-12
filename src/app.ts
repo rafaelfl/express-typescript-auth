@@ -22,7 +22,7 @@ app.use(httpLogger);
 
 // Let's avoid any CORS issue for now ;)
 app.use((_, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "express-typescript-auth.onrender.com");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization",
