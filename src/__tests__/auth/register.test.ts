@@ -110,9 +110,9 @@ describe("Auth Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { msg: "'name' is required and must exceed 5 characters" },
-            { msg: "Invalid email address" },
-            { msg: "'password' is required and must exceed 5 characters" },
+            { message: "'name' is required and must exceed 5 characters" },
+            { message: "Invalid email address" },
+            { message: "'password' is required and must exceed 5 characters" },
           ],
         });
     });
@@ -124,8 +124,8 @@ describe("Auth Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { msg: "'password' is required and must exceed 5 characters" },
-            { msg: "Passwords do not match" },
+            { message: "'password' is required and must exceed 5 characters" },
+            { message: "Passwords do not match" },
           ],
         });
     });
@@ -139,7 +139,7 @@ describe("Auth Module", () => {
           password: "123456",
           passwordConfirmation: "abcdef",
         })
-        .expect(422, { success: false, errors: [{ msg: "Passwords do not match" }] });
+        .expect(422, { success: false, errors: [{ message: "Passwords do not match" }] });
     });
 
     it("should return an existing email error message when the email already exists in the database", async () => {

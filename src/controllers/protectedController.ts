@@ -5,11 +5,11 @@ import { sendResponse } from "../helpers";
 
 const protectedController = {
   protected: asyncWrapper(async (_req: Request, res: Response) => {
-    sendResponse(res, { msg: "Accessing a protected route!" });
+    sendResponse(res, { message: "Accessing a protected route!" });
   }),
 
   adminProtected: asyncWrapper(async (_req: Request, res: Response) => {
-    sendResponse(res, { msg: "Accessing an admin protected route!" });
+    sendResponse(res, { message: "Accessing an admin protected route!" });
   }),
 };
 

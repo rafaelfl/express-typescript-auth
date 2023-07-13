@@ -342,7 +342,7 @@ describe("Auth Module", () => {
         .send({ ...UPDATED_USER, password: "123456", passwordConfirmation: "abcdef" })
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .set("Cookie", [`refreshToken=${REFRESH_TOKEN}`])
-        .expect(422, { success: false, errors: [{ msg: "Passwords do not match" }] });
+        .expect(422, { success: false, errors: [{ message: "Passwords do not match" }] });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });

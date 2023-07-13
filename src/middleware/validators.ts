@@ -5,8 +5,8 @@ import { logger } from "../helpers";
 import { USER_ROLES } from "../types";
 
 const formattedValidationResult = validationResult.withDefaults({
-  formatter: ({ msg }) => ({
-    msg,
+  formatter: ({ msg: message }) => ({
+    message,
   }),
 });
 

@@ -92,8 +92,8 @@ describe("Auth Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { msg: "Invalid email address" },
-            { msg: "'password' is required and must exceed 5 characters" },
+            { message: "Invalid email address" },
+            { message: "'password' is required and must exceed 5 characters" },
           ],
         });
     });
@@ -104,7 +104,7 @@ describe("Auth Module", () => {
         .send({ email: "test@test.com", password: "123" })
         .expect(422, {
           success: false,
-          errors: [{ msg: "'password' is required and must exceed 5 characters" }],
+          errors: [{ message: "'password' is required and must exceed 5 characters" }],
         });
     });
 

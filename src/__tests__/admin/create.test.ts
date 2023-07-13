@@ -166,10 +166,10 @@ describe("Admin Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { msg: "'name' is required and must exceed 5 characters" },
-            { msg: "Invalid email address" },
-            { msg: "'password' is required and must exceed 5 characters" },
-            { msg: "'role' is required and must have a valid value" },
+            { message: "'name' is required and must exceed 5 characters" },
+            { message: "Invalid email address" },
+            { message: "'password' is required and must exceed 5 characters" },
+            { message: "'role' is required and must have a valid value" },
           ],
         });
 
@@ -195,10 +195,10 @@ describe("Admin Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { msg: "'name' is required and must exceed 5 characters" },
-            { msg: "Invalid email address" },
-            { msg: "'password' is required and must exceed 5 characters" },
-            { msg: "'role' is required and must have a valid value" },
+            { message: "'name' is required and must exceed 5 characters" },
+            { message: "Invalid email address" },
+            { message: "'password' is required and must exceed 5 characters" },
+            { message: "'role' is required and must have a valid value" },
           ],
         });
 

@@ -5,7 +5,7 @@ import { sendResponse } from "../helpers";
 
 const helloController = {
   hello: asyncWrapper(async (_req: Request, res: Response) => {
-    sendResponse(res, { msg: "Hello world" });
+    sendResponse(res, { message: "Hello world" });
   }),
 };
 

@@ -17,7 +17,7 @@ describe("Hello Module", () => {
     it("should return a hello message", async () => {
       await request(app)
         .get("/")
-        .expect(200, { success: true, data: { msg: "Hello world" } });
+        .expect(200, { success: true, data: { message: "Hello world" } });
     });
 
     it("should return a 404 error in case the path doesn't exist", async () => {

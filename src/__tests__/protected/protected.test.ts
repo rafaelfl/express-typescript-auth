@@ -100,7 +100,7 @@ describe("Auth Module", () => {
         .get("/api/v1/protected")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .set("Cookie", [`refreshToken=${REFRESH_TOKEN}`])
-        .expect(200, { success: true, data: { msg: "Accessing a protected route!" } });
+        .expect(200, { success: true, data: { message: "Accessing a protected route!" } });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
@@ -155,7 +155,7 @@ describe("Auth Module", () => {
         .get("/api/v1/adminProtected")
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .set("Cookie", [`refreshToken=${REFRESH_TOKEN}`])
-        .expect(200, { success: true, data: { msg: "Accessing an admin protected route!" } });
+        .expect(200, { success: true, data: { message: "Accessing an admin protected route!" } });
 
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });

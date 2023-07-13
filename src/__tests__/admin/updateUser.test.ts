@@ -194,10 +194,10 @@ describe("Admin Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { msg: "'name' must exceed 5 characters" },
-            { msg: "'password' must exceed 5 characters" },
-            { msg: "Passwords do not match" },
-            { msg: "'photo' must be a valid URL" },
+            { message: "'name' must exceed 5 characters" },
+            { message: "'password' must exceed 5 characters" },
+            { message: "Passwords do not match" },
+            { message: "'photo' must be a valid URL" },
           ],
         });
 

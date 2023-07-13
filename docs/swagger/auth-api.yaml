@@ -24,6 +24,8 @@ paths:
       summary: Hello endpoint
       description: >
         An open hello world endpoint
+      tags:
+        - Authentication
 
       security: []
 
@@ -41,7 +43,7 @@ paths:
                   data:
                     type: object
                     properties:
-                      msg:
+                      message:
                         type: string
                         description: Hello world string message
                         example: Hello world
@@ -51,6 +53,9 @@ paths:
       summary: Login endpoint
       description: >
         This endpoint allows to perform a login and receive the refresh and access tokens
+      tags:
+        - Authentication
+
       requestBody:
         required: true
         content:
@@ -132,6 +137,9 @@ paths:
       summary: User registration endpoint
       description: >
         This endpoint allows one to create a new user
+      tags:
+        - Authentication
+      
       requestBody:
         required: true
         content:
@@ -214,6 +222,8 @@ paths:
       summary: Endpoint for refreshing the expired accessToken
       description: >
         This endpoint allows one generate a new access token in replacement to an expired one. In order to increase the security of the API, this endpoint also rotates the refresh token
+      tags:
+        - Authentication
 
       security:
         - refreshToken: []
@@ -261,6 +271,8 @@ paths:
       summary: Endpoint for signing out from the authentication API
       description: >
         This endpoint allows one to logout from this application, invalidating both refresh and access tokens
+      tags:
+        - Authentication
 
       security: [ { refreshToken: [] }, { accessToken: []  } ]
 
@@ -307,6 +319,8 @@ paths:
       summary: Get user profile data in case the user is signed in
       description: >
         This endpoint allows one to get it's user profile data, as well as to check if the session is currently signed in
+      tags:
+        - Authentication
 
       security:
         - accessToken: []
@@ -326,7 +340,7 @@ paths:
                     $ref: '#/components/schemas/User'
 
         '401':
-          description: Return an unauthorized error in case an error occurs processing the access token (sucha as, invalid token, malformed, expired, null token, null payload, etc)
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
           content:
             application/json:
               schema:
@@ -371,6 +385,9 @@ paths:
       summary: Update user profile data of a signed in user
       description: >
         This endpoint allows one to update it's user profile data
+      tags:
+        - Authentication
+      
       requestBody:
         required: true
         content:
@@ -432,7 +449,7 @@ paths:
                     example: "Unable to update user data"
                     
         '401':
-          description: Return an unauthorized error in case an error occurs processing the access token (sucha as, invalid token, malformed, expired, null token, null payload, etc)
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
           content:
             application/json:
               schema:
@@ -466,6 +483,102 @@ paths:
                     type: string
                     example: "Oops, something went wrong!"
 
+  /api/v1/protected:
+    get:
+      summary: Sample dummy endpoint with no data, protected by access token
+      description: >
+        This endpoint returns just a simple string, but works as an example of a route protected by an access token with user role
+      tags:
+          - Protected endpoints
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Returns a dummy string if the user is signed in with a valid access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    description: Protected endpoint message
+                    example: Accessing a protected route!
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error decoding access token"
+
+  /api/v1/adminProtected:
+    get:
+      summary: Sample dummy endpoint with no data, protected by an admin access token
+      description: >
+        This endpoint returns just a simple string, but works as an example of a route protected by an access token with admin role
+      tags:
+          - Protected endpoints
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Returns a dummy string if the user is signed in with a valid admin access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    description: Admin protected endpoint message
+                    example: Accessing an admin protected route!
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error decoding access token"
+
+        '403':
+          description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Access denied! ❌"
+
 
 components:
   securitySchemes:
@@ -494,13 +607,13 @@ components:
           items:
             type: object
             properties:
-              msg:
+              message:
                 type: string
                 description: Description of the returned error
                 example: Invalid email address
           example:
-            - { msg: "Invalid email address" }
-            - { msg: "'password' is required and must exceed 5 characters" }
+            - { message: "Invalid email address" }
+            - { message: "'password' is required and must exceed 5 characters" }
 
     MissingUpdateProfileFields:
       type: object
@@ -516,12 +629,12 @@ components:
           items:
             type: object
             properties:
-              msg:
+              message:
                 type: string
                 description: Description of the returned error
                 example: "Passwords do not match"
           example:
-            - { msg: "Passwords do not match" }
+            - { message: "Passwords do not match" }
 
     MissingRegisterFields:
       type: object
@@ -537,15 +650,15 @@ components:
           items:
             type: object
             properties:
-              msg:
+              message:
                 type: string
                 description: Description of the returned error
                 example: Invalid email address
           example:
-            - { msg: "'name' is required and must exceed 5 characters" }
-            - { msg: "Invalid email address" }
-            - { msg: "'password' is required and must exceed 5 characters" }
-            - { msg: "Passwords do not match" }
+            - { message: "'name' is required and must exceed 5 characters" }
+            - { message: "Invalid email address" }
+            - { message: "'password' is required and must exceed 5 characters" }
+            - { message: "Passwords do not match" }
 
   schemas:
     User:
