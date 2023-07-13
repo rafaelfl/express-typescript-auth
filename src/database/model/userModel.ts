@@ -1,6 +1,7 @@
 import mongoose, { Document } from "mongoose";
 
 import { USER_ROLES, UserRoles } from "../../types";
+import userTokenModel from "./userTokenModel";
 
 const { Schema } = mongoose;
 
@@ -41,6 +42,11 @@ const UserSchema = new Schema<UserModel>({
   aboutMe: {
     type: String,
   },
+});
+
+UserSchema.pre("deleteOne", { document: true, query: false }, function middleware(next) {
+  userTokenModel.deleteMany({ userId: this._id }).exec();
+  next();
 });
 
 export default mongoose.model<UserModel>("Users", UserSchema);

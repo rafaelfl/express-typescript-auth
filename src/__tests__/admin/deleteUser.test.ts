@@ -160,7 +160,7 @@ describe("Admin Module", () => {
         });
       });
 
-      mockingoose(userModel).toReturn(null, "findOneAndDelete");
+      mockingoose(userModel).toReturn(null, "findOne");
 
       await request(app)
         .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
@@ -182,7 +182,7 @@ describe("Admin Module", () => {
         });
       });
 
-      mockingoose(userModel).toReturn(null, "findOneAndDelete");
+      mockingoose(userModel).toReturn(null, "findOne");
 
       await request(app)
         .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
@@ -204,10 +204,7 @@ describe("Admin Module", () => {
         });
       });
 
-      mockingoose(userModel).toReturn(
-        new Error("Error accessing the database"),
-        "findOneAndDelete",
-      );
+      mockingoose(userModel).toReturn(new Error("Error accessing the database"), "findOne");
 
       await request(app)
         .delete("/api/v1/admin/user/64a4cc19309c4295cb58f998")
