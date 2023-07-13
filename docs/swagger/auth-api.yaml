@@ -19,6 +19,7 @@ servers:
         default: "3000"
 
 paths:
+  ### AUTHENTICATION ENDPOINTS
   /:
     get:
       summary: Hello endpoint
@@ -123,14 +124,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Oops, something went wrong!"
+                $ref: '#/components/responses/InternalServerError'
 
   /register:
     post:
@@ -208,14 +202,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Oops, something went wrong!"
+                $ref: '#/components/responses/InternalServerError'
 
   /refresh:
     post:
@@ -305,20 +292,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Oops, something went wrong!"
+                $ref: '#/components/responses/InternalServerError'
 
   /profile:
     get:
       summary: Get user profile data in case the user is signed in
       description: >
         This endpoint allows one to get it's user profile data, as well as to check if the session is currently signed in
+      
       tags:
         - Authentication
 
@@ -344,14 +325,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Error decoding access token"
+                $ref: '#/components/responses/TokenError'
 
         '403':
           description: Return a forbidden error in case an error occurs processing the request
@@ -372,14 +346,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Oops, something went wrong!"
+                $ref: '#/components/responses/InternalServerError'
 
     patch:
       summary: Update user profile data of a signed in user
@@ -435,7 +402,7 @@ paths:
                     $ref: '#/components/schemas/User'
 
         '400':
-          description: Return an bad request error in case it was not possible to update the user profile data in the database
+          description: Return a bad request error in case it was not possible to update the user profile data in the database
           content:
             application/json:
               schema:
@@ -453,14 +420,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Error decoding access token"
+                $ref: '#/components/responses/TokenError'
 
         '422':
           description: Return an unprocessable content response in case there are missing fields in the request
@@ -474,22 +434,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Oops, something went wrong!"
+                $ref: '#/components/responses/InternalServerError'
 
+  ### PROTECTED ENDPOINTS
   /api/v1/protected:
     get:
       summary: Sample dummy endpoint with no data, protected by access token
       description: >
         This endpoint returns just a simple string, but works as an example of a route protected by an access token with user role
       tags:
-          - Protected endpoints
+          - Protected
 
       security:
         - accessToken: []
@@ -515,14 +469,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: "Error decoding access token"
+                $ref: '#/components/responses/TokenError'
 
   /api/v1/adminProtected:
     get:
@@ -530,10 +477,10 @@ paths:
       description: >
         This endpoint returns just a simple string, but works as an example of a route protected by an access token with admin role
       tags:
-          - Protected endpoints
+          - Protected
 
       security:
-        - accessToken: []
+        - accessToken: ["admin"]
 
       responses:
         '200':
@@ -556,17 +503,89 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/responses/TokenError'
+
+        '403':
+          description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccessDeniedError'
+
+  ### ADMIN ENDPOINTS
+  /api/v1/admin/createAccount:
+    post:
+      summary: Admin account creation endpoint
+      description: >
+        This endpoint allows an administrator to create a new account (with user or admin role)
+
+      tags:
+          - Admin
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  description: User name
+                  example: Rafael Fernandes Lopes
+                password:
+                  type: string
+                  description: User password
+                  example: password
+                passwordConfirmation:
+                  type: string
+                  description: User password confirmation. It is only mandatory if a valid password field is provided
+                  example: password
+                photo:
+                  type: string
+                  description: User's photo URL
+                  example: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrFe_1bqd-KCl2sbFivhvyt4aZ65AyC8habg&usqp=CAU"
+                aboutMe:
+                  type: string
+                  description: User's bio
+                  example: "It's me, Mario!"
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Returns a successful response in case the account is created
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
                   success:
                     type: boolean
-                    example: false
+                    example: true
                   message:
                     type: string
-                    example: "Error decoding access token"
+                    description: Account creation message
+                    example: "Account registered sucessfully"
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
 
         '403':
           description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccessDeniedError'
+
+        '409':
+          description: Return a conflict error message informing that the user email already exists
           content:
             application/json:
               schema:
@@ -577,8 +596,328 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: "Access denied! ❌"
+                    example: User with given email already exists
 
+        '422':
+          description: Return an unprocessable content response in case there are missing fields in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/MissingCreateAccountFields'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/user/{userId}:
+    get:
+      summary: Admin endpoint to retrieve the user data associated with an specific userId
+      description: >
+        This endpoint allows an administrator to retrieve the data from an user
+      
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: String id of the user to get
+          example: 64a4cc19309c4295cb58f998
+
+      tags:
+          - Admin
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Return the user data from an specific userId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
+
+        '403':
+          description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccessDeniedError'
+
+        '404':
+          description: Return a not found error if the userId is not found in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unable to retrieve user data
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Admin endpoint to update the user data associated with an specific userId
+      description: >
+        This endpoint allows an administrator to update the data from an user
+      
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: String id of the user to get
+          example: 64a9061de2f39131827c8982
+
+      tags:
+          - Admin
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  description: User name
+                  example: Rafael Fernandes Lopes
+                password:
+                  type: string
+                  description: User password
+                  example: password
+                passwordConfirmation:
+                  type: string
+                  description: User password confirmation. It is only mandatory if a valid password field is provided
+                  example: password
+                photo:
+                  type: string
+                  description: User's photo URL
+                  example: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrFe_1bqd-KCl2sbFivhvyt4aZ65AyC8habg&usqp=CAU"
+                aboutMe:
+                  type: string
+                  description: User's bio
+                  example: "It's me, Mario!"
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Update the user data from an specific userId and return the updated data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        '400':
+          description: Return a bad request error in case it was not possible to update the user data in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unable to update user data"
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
+
+        '403':
+          description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccessDeniedError'
+
+        '422':
+          description: Return an unprocessable content response in case there are missing fields in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/MissingUpdateUserFields'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Admin endpoint to delete the user data associated with an specific userId
+      description: >
+        This endpoint allows an administrator to delete the data from an user (except data from the requesting user)
+      
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: String id of the user to get
+          example: 64a9061de2f39131827c8982
+
+      tags:
+          - Admin
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Delete the user data from an specific userId and return the deleted data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        '400':
+          description: Return a bad request error in case it was not possible to delete the user data from the database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unable to delete user data"
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
+
+        '403':
+          description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccessDeniedError'
+
+        '409':
+          description: Return a conflict error message informing that the current user cannot delete its own user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: You cannot delete your own user
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/users:
+    get:
+      summary: Get data from all registered users
+      description: >
+        This endpoint allows an administrator to retrieve the data from all registered users
+      
+      tags:
+        - Admin
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Return the data from all registered users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
+
+        '403':
+          description: Return a forbidden error (access denied) in case the access token hasn't the admin role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/AccessDeniedError'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
 
 components:
   securitySchemes:
@@ -659,6 +998,85 @@ components:
             - { message: "Invalid email address" }
             - { message: "'password' is required and must exceed 5 characters" }
             - { message: "Passwords do not match" }
+
+    MissingCreateAccountFields:
+      type: object
+      required:
+        - success
+        - errors
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Description of the returned error
+                example: Invalid email address
+          example:
+            - { message: "'name' is required and must exceed 5 characters" }
+            - { message: "Invalid email address" }
+            - { message: "'password' is required and must exceed 5 characters" }
+            - { message: "'role' is required and must have a valid value" }
+
+    MissingUpdateUserFields:
+      type: object
+      required:
+        - success
+        - errors
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Description of the returned error
+                example: "'photo' must be a valid URL"
+          example:
+            -  { message: "'name' must exceed 5 characters" }
+            - { message: "'password' must exceed 5 characters" }
+            - { message: "Passwords do not match" }
+            - { message: "'photo' must be a valid URL" }
+
+
+    TokenError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Error decoding access token"
+
+    AccessDeniedError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Access denied! ❌"
+
+    InternalServerError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Oops, something went wrong!"
 
   schemas:
     User:
