@@ -5,6 +5,7 @@ import authRoutes from "./auth";
 import helloRoutes from "./hello";
 import adminRoutes from "./admin";
 import protectedRoutes from "./protected";
+import dataRoutes from "./data";
 
 const { API_VERSION } = config;
 
@@ -25,6 +26,9 @@ const routes = (app: Application) => {
 
   // admin routes
   app.use(`${apiPrefix}/admin`, adminRoutes);
+
+  // protected routes
+  app.use(apiPrefix, dataRoutes);
 
   return app;
 };
