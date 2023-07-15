@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { body, param, validationResult } from "express-validator";
+import { body, param, query, validationResult } from "express-validator";
 
 import { logger } from "../helpers";
 import { USER_ROLES } from "../types";
@@ -65,6 +65,11 @@ export const validators = {
   updateUserValidationRules: [
     ...optionalFieldsUserResourceValidator,
     param("userId", "'userId' must be present in the URL").isString(),
+  ],
+
+  getPaginatedDataValidationRule: [
+    query("page", "'page' must have a numerical value").optional().isNumeric(),
+    query("size", "'size' must have a numerical value").optional().isNumeric(),
   ],
 
   validate: (req: Request, res: Response, next: NextFunction) => {

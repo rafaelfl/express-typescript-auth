@@ -28,7 +28,7 @@
       }
     ],
     "object-curly-newline": ["warn", { "consistent": true }],
-    "quotes": ["warn", "double"],
+    "quotes": ["warn", "double", { "avoidEscape": true }],
     "no-console": "off",
     "operator-linebreak": "off",
     "implicit-arrow-linebreak": "off",

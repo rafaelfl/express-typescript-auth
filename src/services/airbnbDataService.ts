@@ -53,7 +53,7 @@ const convertAirbnbDocToAirbnbData = (airbnbDoc: AirbnbDoc) => {
 };
 
 export const airbnbDataService = {
-  findAllData: async (pageNumber: number, pageSize: number) => {
+  getPaginatedData: async (pageNumber: number, pageSize: number) => {
     const airbnbDataDoc = await airbnbDataModel
       .find()
       .sort({ _id: 1 })
@@ -61,6 +61,6 @@ export const airbnbDataService = {
       .limit(pageSize)
       .lean();
 
-    return airbnbDataDoc.map(d => convertAirbnbDocToAirbnbData(d));
+    return airbnbDataDoc?.map(d => convertAirbnbDocToAirbnbData(d)) ?? [];
   },
 };
