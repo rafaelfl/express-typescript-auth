@@ -1,8 +1,8 @@
 openapi: 3.0.0
 
 info:
-  title: Authentication API
-  description: An authentication API with registration, sign in, sign out, profile and admin features
+  title: Sample Authentication API
+  description: "An authentication API with registration, sign in, sign out, profile and admin features. A data endpoint that returns some fake Airbnb data to be consumed by sample applications is also included in the API (original database retrieved from MongoDB Atlas - more info: https://www.mongodb.com/docs/atlas/sample-data/sample-airbnb/)"
   version: "1.0.0"
   contact:
     name: Rafael Fernandes Lopes
@@ -24,7 +24,7 @@ paths:
     get:
       summary: Hello endpoint
       description: >
-        An open hello world endpoint
+        A simple hello world endpoint
       tags:
         - Authentication
 
@@ -96,7 +96,7 @@ paths:
             Set-Cookie:
               schema: 
                 type: string
-                example: refreshToken=abcde12345; Max-Age=86400; Domain=localhost; Path=/; HttpOnly; Secure; SameSite=None
+                example: refreshToken=abcde12345 Max-Age=86400 Domain=localhost Path=/ HttpOnly Secure SameSite=None
 
         '401':
           description: Return an unauthorized response in case login parameters are not valid
@@ -237,7 +237,7 @@ paths:
             Set-Cookie:
               schema: 
                 type: string
-                example: refreshToken=abcde12345; Max-Age=86400; Domain=localhost; Path=/; HttpOnly; Secure; SameSite=None
+                example: refreshToken=abcde12345 Max-Age=86400 Domain=localhost Path=/ HttpOnly Secure SameSite=None
 
         '403':
           description: Return a forbidden error in case an error occurs processing the refresh
@@ -919,6 +919,128 @@ paths:
               schema:
                 $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/data:
+    get:
+      summary: Get paginated Airbnb sample data. Can be used to build sample applications using these mock data
+      description: >
+        This endpoint allows an user to retrieve the Airbnb sample data using a paginated strategy
+      
+      tags:
+        - Data
+
+      security:
+        - accessToken: []
+
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The number of pages to skip before starting to collect the result set
+          required: false
+          default: 1
+        - in: query
+          name: size
+          schema:
+            type: integer
+          description: The number of items to return per page
+          required: false
+          default: 10
+
+      responses:
+        '200':
+          description: Return paginated data from the Airbnb sample data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AirbnbData'
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+                
+  /api/v1/data/{dataId}:
+    get:
+      summary: Get paginated Airbnb sample data. Can be used to build some sample applications using these data
+      description: >
+        This endpoint allows an user to retrieve the Airbnb sample data using a paginated strategy
+
+      parameters:
+        - in: path
+          name: dataId
+          schema:
+            type: string
+          required: true
+          description: String id of the Airbnb sample data to get
+          example: "14013822"
+      
+      tags:
+        - Data
+
+      security:
+        - accessToken: []
+
+      responses:
+        '200':
+          description: Return a single Airbnb sample data based on the passed dataId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AirbnbData'
+
+        '401':
+          description: Return an unauthorized error in case an error occurs processing the access token (such as invalid token, malformed, expired, null token, null payload, etc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TokenError'
+
+        '404':
+          description: Return a not found error if the dataId is not found in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unable to retrieve data
+
+        '500':
+          description: Return a server error status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+
+
 components:
   securitySchemes:
     refreshToken:
@@ -1110,3 +1232,244 @@ components:
           type: string
           description: User's bio
           example: "It's me, Mario!"
+    AirbnbData:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "10006546"
+        listing_url:
+          type: string
+          example: "https://www.airbnb.com/rooms/10006546"
+        name:
+          type: string
+          example: "Ribeira Charming Duplex"
+        summary:
+          type: string
+          example: "Fantastic duplex apartment with three bedrooms, located in the historic area of Porto, Ribeira (Cube) - UNESCO World Heritage Site. Centenary building fully rehabilitated, without losing their original character."
+        space:
+          type: string
+          example: "Privileged views of the Douro River and Ribeira square, our apartment offers the perfect conditions to discover the history and the charm of Porto. Apartment comfortable, charming, romantic and cozy in the heart of Ribeira. Within walking distance of all the most emblematic places of the city of Porto. The apartment is fully equipped to host 8 people, with cooker, oven, washing machine, dishwasher, microwave, coffee machine (Nespresso) and kettle. The apartment is located in a very typical area of the city that allows to cross with the most picturesque population of the city, welcoming, genuine and happy people that fills the streets with his outspoken speech and contagious with your sincere generosity, wrapped in a only parochial spirit."
+        description:
+          type: string
+          example: "Fantastic duplex apartment with three bedrooms, located in the historic area of Porto, Ribeira (Cube) - UNESCO World Heritage Site. Centenary building fully rehabilitated, without losing their original character. Privileged views of the Douro River and Ribeira square, our apartment offers the perfect conditions to discover the history and the charm of Porto. Apartment comfortable, charming, romantic and cozy in the heart of Ribeira. Within walking distance of all the most emblematic places of the city of Porto. The apartment is fully equipped to host 8 people, with cooker, oven, washing machine, dishwasher, microwave, coffee machine (Nespresso) and kettle. The apartment is located in a very typical area of the city that allows to cross with the most picturesque population of the city, welcoming, genuine and happy people that fills the streets with his outspoken speech and contagious with your sincere generosity, wrapped in a only parochial spirit. We are always available to help guests"
+        neighborhood_overview:
+          type: string
+          example: "In the neighborhood of the river, you can find several restaurants as varied flavors, but without forgetting the so traditional northern food. You can also find several bars and pubs to unwind after a day's visit to the magnificent Port. To enjoy the Douro River can board the boats that daily make the ride of six bridges. You can also embark towards Régua, Barca d'Alva, Pinhão, etc and enjoy the Douro Wine Region, World Heritage of Humanity. The Infante's house is a few meters and no doubt it deserves a visit. They abound grocery stores, bakeries, etc. to make your meals. Souvenir shop, wine cellars, etc. to bring some souvenirs."
+        notes:
+          type: string
+          example: "Lose yourself in the narrow streets and staircases zone, have lunch in pubs and typical restaurants, and find the renovated cafes and shops in town. If you like exercise, rent a bicycle in the area and ride along the river to the sea, where it will enter beautiful beaches and terraces for everyone. The area is safe, find the bus stops 1min and metro line 5min. The bustling nightlife is a 10 min walk, where the streets are filled with people and entertainment for all. But Porto is much more than the historical center, here is modern museums, concert halls, clean and cared for beaches and surf all year round. Walk through the Ponte D. Luis and visit the different Caves of Port wine, where you will enjoy the famous port wine. Porto is a spoken city everywhere in the world as the best to be visited and savored by all ... natural beauty, culture, tradition, river, sea, beach, single people, typical food, and we are among those who best receive tourists, confirm! Come visit us and feel at ho"
+        transit:
+          type: string
+          example: "Transport: • Metro station and S. Bento railway 5min; • Bus stop a 50 meters; • Lift Guindais (Funicular) 50 meters; • Tuc Tuc-to get around the city; • Buses tourist; • Cycling through the marginal drive; • Cable car in Gaia, overlooking the Port (just cross the bridge)."
+        access:
+          type: string
+          example: 'We are always available to help guests. The house is fully available to guests. We are always ready to assist guests. when possible we pick the guests at the airport.  This service transfer have a cost per person. We will also have service "meal at home" with a diverse menu and the taste of each. Enjoy the moment!'
+        interaction:
+          type: string
+          example: "Cot - 10 € / night Dog - € 7,5 / night"
+        house_rules:
+          type: string
+          example: "Make the house your home..."
+        property_type:
+          type: string
+          example: "House"
+        room_type:
+          type: string
+          example: "Entire home/apt"
+        bed_type:
+          type: string
+          example: "Real Bed"
+        minimum_nights:
+          type: string
+          example: "2"
+        maximum_nights:
+          type: string
+          example: "30"
+        cancellation_policy:
+          type: string
+          example: "moderate"
+        last_scraped: 
+          type: string
+          format: date-time
+          example: "2019-02-16T05:00:00.000Z"
+        calendar_last_scraped: 
+          type: string
+          format: date-time
+          example: "2019-02-16T05:00:00.000Z"
+        first_review: 
+          type: string
+          format: date-time
+          example: "2016-01-03T05:00:00.000Z"
+        last_review: 
+          type: string
+          format: date-time
+          example: "2019-01-20T05:00:00.000Z"
+        accommodates:
+          type: number
+          example: 8
+        bedrooms:
+          type: number
+          example: 3
+        beds:
+          type: number
+          example: 5
+        number_of_reviews:
+          type: number
+          example: 51
+        bathrooms:
+          type: number
+          example: 1
+        amenities:
+          type: array
+          items:
+            type: string
+          example: ["TV", "Cable TV", "Wifi", "Kitchen"]
+        price:
+          type: number
+          example: 80
+        weekly_price:
+          type: number
+          example: 0
+        monthly_price:
+          type: number
+          example: 0
+        security_deposit:
+          type: number
+          example: 200
+        cleaning_fee:
+          type: number
+          example: 35
+        extra_people:
+          type: number
+          example: 15
+        guests_included:
+          type: number
+          example: 6
+        images:
+          type: object
+          properties:
+            thumbnail_url:
+              type: string
+              example: ""
+            medium_url:
+              type: string
+              example: ""
+            picture_url:
+              type: string
+              example: "https://a0.muscache.com/im/pictures/e83e702f-ef49-40fb-8fa0-6512d7e26e9b.jpg?aki_policy=large"
+            xl_picture_url:
+              type: string
+              example: ""
+        host:
+          type: object
+          properties:
+            host_id:
+              type: string
+              example: "51399391"
+            host_url:
+              type: string
+              example: "https://www.airbnb.com/users/show/51399391"
+            host_name:
+              type: string
+              example: "Ana&Gonçalo"
+            host_location:
+              type: string
+              example: "Porto, Porto District, Portugal"
+            host_about:
+              type: string
+              example: "Gostamos de passear, de viajar, de conhecer pessoas e locais novos, gostamos de desporto e animais! Vivemos na cidade mais linda do mundo!!!"
+            host_response_time:
+              type: string
+              example: "within an hour"
+            host_thumbnail_url:
+              type: string
+              example: "https://a0.muscache.com/im/pictures/fab79f25-2e10-4f0f-9711-663cb69dc7d8.jpg?aki_policy=profile_small"
+            host_picture_url:
+              type: string
+              example: "https://a0.muscache.com/im/pictures/fab79f25-2e10-4f0f-9711-663cb69dc7d8.jpg?aki_policy=profile_x_medium"
+            host_neighbourhood:
+              type: string
+              example: ""
+            host_response_rate:
+              type: number
+              example: 100
+            host_is_superhost:
+              type: boolean
+              example: false
+            host_has_profile_pic:
+              type: boolean
+              example: true
+            host_identity_verified:
+              type: boolean
+              example: true
+            host_listings_count:
+              type: number
+              example: 3
+            host_total_listings_count:
+              type: number
+              example: 3
+            host_verifications:
+              type: array
+              items:
+                type: string
+              example: ["email", "phone", "reviews", "jumio", "offline_government_id", "government_id"]
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              example: "Porto, Porto, Portugal"
+            suburb:
+              type: string
+              example: ""
+            government_area:
+              type: string
+              example: "Cedofeita, Ildefonso, Sé, Miragaia, Nicolau, Vitória"
+            market:
+              type: string
+              example: "Porto"
+            country:
+              type: string
+              example: "Portugal"
+            country_code:
+              type: string
+              example: "PT"
+            location:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "Point"
+                coordinates:
+                  type: array
+                  items:
+                    type: number
+                  example: [-8.61308, 41.1413]
+                is_location_exact:
+                  type: boolean
+                  example: false
+        reviews:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "58663741"
+              date:
+                type: string
+                format: date-time
+                example: "2016-01-03T05:00:00.000Z"
+              listing_id:
+                type: string
+                example: "10006546"
+              reviewer_id:
+                type: string
+                example: "51483096"
+              reviewer_name:
+                type: string
+                example: "Cátia"
+              comments:
+                type: string
+                example: "A casa da Ana e do Gonçalo foram o local escolhido para a passagem de ano com um grupo de amigos. Fomos super bem recebidos com uma grande simpatia e predisposição a ajudar com qualquer coisa que fosse necessário.\r\nA casa era ainda melhor do que parecia nas fotos, totalmente equipada, com mantas, aquecedor e tudo o que pudessemos precisar.\r\nA localização não podia ser melhor! Não há melhor do que acordar de manhã e ao virar da esquina estar a ribeira do Porto."

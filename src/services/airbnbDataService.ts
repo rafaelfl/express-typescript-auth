@@ -63,4 +63,14 @@ export const airbnbDataService = {
 
     return airbnbDataDoc?.map(d => convertAirbnbDocToAirbnbData(d)) ?? [];
   },
+
+  getData: async (id: string) => {
+    const airbnbDataDoc = await airbnbDataModel.findOne({ _id: id }).lean();
+
+    if (!airbnbDataDoc) {
+      return null;
+    }
+
+    return convertAirbnbDocToAirbnbData(airbnbDataDoc);
+  },
 };

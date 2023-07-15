@@ -46,7 +46,7 @@ export interface AirbnbData {
     host_name: string;
     host_location: string;
     host_about: string;
-    host_response_time?: string;
+    host_response_time: string;
     host_thumbnail_url: string;
     host_picture_url: string;
     host_neighbourhood: string;

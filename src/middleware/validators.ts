@@ -72,6 +72,8 @@ export const validators = {
     query("size", "'size' must have a numerical value").optional().isNumeric(),
   ],
 
+  dataIdValidationRule: [param("dataId", "'dataId' must be present in the URL").isString()],
+
   validate: (req: Request, res: Response, next: NextFunction) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
     const errors = formattedValidationResult(req);

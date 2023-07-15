@@ -18,4 +18,5 @@ export const messages = {
   UNABLE_UPDATE_USER: "Unable to update user data",
   UNABLE_DELETE_USER: "Unable to delete user data",
   CANT_DELETE_OWN_USER: "You cannot delete your own user",
+  UNABLE_RETRIEVE_DATA: "Unable to retrieve data",
 };

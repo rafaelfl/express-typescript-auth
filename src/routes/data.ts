@@ -8,10 +8,18 @@ const router = Router();
 
 router.get(
   "/data",
+  authVerifier.verifyAccessToken,
   validators.getPaginatedDataValidationRule,
   validators.validate,
-  authVerifier.verifyAccessToken,
   dataController.getPaginatedData,
+);
+
+router.get(
+  "/data/:dataId",
+  authVerifier.verifyAccessToken,
+  validators.dataIdValidationRule,
+  validators.validate,
+  dataController.getData,
 );
 
 export default router;
