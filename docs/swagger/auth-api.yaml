@@ -919,6 +919,7 @@ paths:
               schema:
                 $ref: '#/components/responses/InternalServerError'
 
+  ### DATA ENDPOINTS
   /api/v1/data:
     get:
       summary: Get paginated Airbnb sample data. Can be used to build sample applications using these mock data
