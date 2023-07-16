@@ -17,7 +17,8 @@
     "prepare": "husky install",
     "test": "jest --watchAll",
     "test-coverage": "jest --collectCoverage true",
-    "test-ci": "jest --ci"
+    "test-ci": "jest --ci",
+    "db:seed": "npx ts-node --files ./src/seeder/seedDB.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",

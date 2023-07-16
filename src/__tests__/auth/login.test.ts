@@ -232,7 +232,7 @@ describe("Auth Module", () => {
         .expect("set-cookie", /HttpOnly; Secure; SameSite=None/);
 
       expect(loggerWarn).toHaveBeenCalledWith(
-        `The refresh token sent from ${USER_ID} was used in another device. All devices were signed out`,
+        `The refresh token sent from ${USER_ID} could be used in another device. All devices were signed out`,
       );
     });
 

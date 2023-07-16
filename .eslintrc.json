@@ -38,7 +38,8 @@
     "no-underscore-dangle": "off",
     "jest/expect-expect": "off",
     "jest/no-test-prefixes": "off",
-    "jest/no-disabled-tests": "off"
+    "jest/no-disabled-tests": "off",
+    "no-plusplus": ["warn", { "allowForLoopAfterthoughts": true }]
   },
   "overrides": [
     {

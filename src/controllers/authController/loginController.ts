@@ -58,7 +58,7 @@ const loginController = asyncWrapper(async (req: Request, res: Response, next: N
       //  So, let's clear all valid refresh tokens
       if (!userToken) {
         logger.warn(
-          `The refresh token sent from ${user.id} was used in another device. All devices were signed out`,
+          `The refresh token sent from ${user.id} could be used in another device. All devices were signed out`,
         );
 
         // remove all valid user tokens for that user id

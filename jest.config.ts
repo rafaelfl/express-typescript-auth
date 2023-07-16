@@ -32,6 +32,7 @@ const config: Config = {
     "src/middleware/http-logger.ts",
     "src/helpers/errorHandler",
     "src/types/express/*",
+    "src/seeder/seedDB.ts",
   ],
   coverageReporters: ["text", "lcov"],
   coverageThreshold: {

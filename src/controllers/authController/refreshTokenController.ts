@@ -32,7 +32,7 @@ const refreshTokenController = asyncWrapper(async (req: Request, res: Response) 
       await userTokenService.removeAllUserTokensById(userId);
 
       logger.warn(
-        `The refresh token sent from ${userId} was used in another device. All devices were signed out.`,
+        `The refresh token sent from ${userId} could be used in another device. All devices were signed out.`,
       );
       throw createHttpError(
         403,
