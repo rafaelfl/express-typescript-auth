@@ -2,7 +2,6 @@ version: "3.8"
 services:
   server:
     build: .
-    # platform: linux/x86_64
     container_name: server
     working_dir: "/app"
     environment:
@@ -12,9 +11,7 @@ services:
     restart: always
     depends_on:
       - mongo
-    volumes:
-      - ./:/app
-      - /app/node_modules
+      - redis
 
   mongo:
     image: mongo
@@ -42,6 +39,13 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: admin
       ME_CONFIG_MONGODB_URL: mongodb://root:admin@mongo:27017/
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
 
 volumes:
   mongodb:

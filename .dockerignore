@@ -1,17 +1,25 @@
 # ignore .git and .cache folders
 .git
 .cache
+# ignore docker files
+Dockerfile
+docker-compose.yml
 # ignore all node_modules
-/node_modules/
+node_modules/
 .husky/
 .vscode/
 build/
 coverage/
 logs/
+dump/
 # ignore all markdown files (md) beside all README*.md other than README-secret.md
 *.md
 !README*.md
 README-secret.md
+*.md
+**/*.test*
+test*
+jest*
 
 ### macOS ###
 # General

@@ -5,9 +5,9 @@ FROM --platform=$BUILDPLATFORM node:16.15.0-alpine
 WORKDIR /app
 COPY . .
 
-RUN yarn install --ignore-scripts
+RUN yarn install
 RUN yarn build
 
-CMD ["yarn", "start"]
 EXPOSE 3000
 
+CMD ["yarn", "start"]
