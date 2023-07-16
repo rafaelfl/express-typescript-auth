@@ -9,9 +9,6 @@ COPY . .
 RUN yarn install
 RUN yarn build
 
-# seeding mongoDB data
-RUN yarn db:seed
-
 EXPOSE 3000
 
 CMD ["yarn", "start"]

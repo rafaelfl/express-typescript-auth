@@ -33,6 +33,7 @@ const config: Config = {
     "src/helpers/errorHandler",
     "src/types/express/*",
     "src/seeder/seedDB.ts",
+    "mongo-init.js",
   ],
   coverageReporters: ["text", "lcov"],
   coverageThreshold: {

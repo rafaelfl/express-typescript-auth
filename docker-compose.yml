@@ -20,10 +20,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: authusers
     volumes:
       - mongodb:/data/db
       - mongodb_config:/data/configdb
       - ./dump:/dump
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
       - "27017:27017"
 
