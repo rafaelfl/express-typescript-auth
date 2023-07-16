@@ -107,13 +107,11 @@ export const userService = {
   },
 
   deleteUserById: async (id: string) => {
-    const userDoc = await userModel.findOne({ _id: new Types.ObjectId(id) });
+    const userDoc = await userModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
 
     if (!userDoc) {
       return null;
     }
-
-    await userDoc.deleteOne();
 
     return convertUserDocToUser(userDoc);
   },

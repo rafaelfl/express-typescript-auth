@@ -29,7 +29,11 @@ export const connectMongoDB = async () => {
       err => logger.error(err.message),
     )
     .on("disconnected", connectMongoDB)
-    .once("open", () => logger.info(`MongoDB connected to ${databaseUrl}`));
+    .once(
+      "open",
+      /* istanbul ignore next */
+      () => logger.info(`MongoDB connected to ${databaseUrl}`),
+    );
 
   await mongoose.connect(databaseUrl, {
     user: databaseUser,

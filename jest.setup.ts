@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-extraneous-dependencies
+require("mockingoose");
+
 // Optional: configure or set up a testing framework before each test.
 // If you delete this file, remove `setupFilesAfterEnv` from `jest.config.js`
 

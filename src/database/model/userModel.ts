@@ -44,8 +44,10 @@ const UserSchema = new Schema<UserModel>({
   },
 });
 
-UserSchema.pre("deleteOne", { document: true, query: false }, function middleware(next) {
-  userTokenModel.deleteMany({ userId: this._id }).exec();
+/* istanbul ignore next */
+UserSchema.pre("findOneAndDelete", { document: true, query: true }, function middleware(next) {
+  const id = this.getQuery()._id;
+  userTokenModel.deleteMany({ userId: id }).exec();
   next();
 });
 
