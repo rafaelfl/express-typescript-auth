@@ -53,7 +53,7 @@ You can try out this API by running it in your local environment, within a Docke
 
 ### 💾 Database schema design
 
-![MongoDB database schema design](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/46e92a2740064a029c35c7d0e4255298077332b9/resources/db-diagram.svg?token=AHN7SWKNO3UDVRCQDSARBZLEWTC54)
+![MongoDB database schema design](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/50400b5922bea253a241186cc0e36a07eef38943/resources/db-diagram.svg?token=AHN7SWLU6QAC7V7YZU4VUQTEWTJ5Y)
 
 ### 🔑 How Refresh Token Rotation Works
 
