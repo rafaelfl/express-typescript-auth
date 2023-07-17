@@ -67,6 +67,8 @@ describe("Auth Module", () => {
   beforeAll(() => {
     config.accessTokenPrivateKey = "accesskey";
     config.refreshTokenPrivateKey = "refreshkey";
+    config.accessTokenExpiration = "10m";
+    config.refreshTokenExpiration = "24h";
   });
 
   afterEach(() => {
