@@ -22,7 +22,7 @@
 - [Installation](#-installation)
   - [Local installation](#-local-installation)
   - [Docker installation](#-docker-installation)
-  - [Testing the project online](#-testing-the-project-online)
+  - [Testing project online](#-testing-project-online)
 - [How to use](#-how-to-use)
 - [Technologies](#-technologies)
 - [TODO list](#-todo-list)
@@ -199,7 +199,7 @@ The applications will be available in the following ports:
 $ docker stop server
 ```
 
-### 🕸️ Testing the project online
+### 🕸️ Testing project online
 
 This API was deployed on [Render](https://render.com/) and it is available for testing through the following URL:
 
