@@ -53,7 +53,7 @@ You can try this API running it in your local environment, in a Docker container
 
 ### 💾 Database schema design
 
-![MongoDB database schema design](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/main/resources/db-diagram.svg)
+![MongoDB database schema design](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/46e92a2740064a029c35c7d0e4255298077332b9/resources/db-diagram.svg?token=AHN7SWKNO3UDVRCQDSARBZLEWTC54)
 
 ### 🔑 How the refresh token rotation works?
 
@@ -65,7 +65,7 @@ All restricted API requests should send (in the Authorization Header) the **acce
 
 Finally, if the current **refresh token** was denied (during the tokens refreshing), that means that the user should perform a new authentication. The following image depicts the communication flow between the client and server:
 
-![Refresh token rotation flow](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/main/resources/session-flow.png)
+![Refresh token rotation flow](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/main/resources/session-flow.png?token=GHSAT0AAAAAACDARR7UEA2SUBWLBKKT52PQZFU2PWQ)
 
 (image credits to [Supertokens](https://supertokens.com/blog/the-best-way-to-securely-manage-user-sessions))
 
