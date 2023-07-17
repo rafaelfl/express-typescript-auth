@@ -201,7 +201,7 @@ $ docker stop server
 
 This API was deployed on [Render](https://render.com/) and it is available for testing through the following URL:
 
-[Sample Authentication API](https://express-typescript-auth.onrender.com/)
+[Authentication API](https://express-typescript-auth.onrender.com/)
 
 **IMPORTANT:** Accessing the application using the previous URL can take a while on the first time (due its startup time). Free instances are automatically spun down after 15 minutes of inactivity.
 
