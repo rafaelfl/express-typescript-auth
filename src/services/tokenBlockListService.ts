@@ -1,7 +1,7 @@
 import redisClient from "../redisDatabase";
 
-export const tokenBlackListService = {
-  addTokenToBlacklist: async (token: string, tokenExp: number) => {
+export const tokenBlockListService = {
+  addTokenToBlocklist: async (token: string, tokenExp: number) => {
     if (redisClient.isReady) {
       const tokenKey = `bl_${token}`;
       await redisClient.set(tokenKey, token);
@@ -9,7 +9,7 @@ export const tokenBlackListService = {
     }
   },
 
-  isTokenBlackListed: async (token: string) => {
+  isTokenBlocked: async (token: string) => {
     if (redisClient.isReady) {
       const tokenKey = `bl_${token}`;
       const val = await redisClient.get(tokenKey);

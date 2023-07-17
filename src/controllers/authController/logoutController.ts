@@ -6,7 +6,7 @@ import { config } from "../../config";
 import { messages } from "../../constants";
 import { asyncWrapper } from "../utils/asyncWrapper";
 import { convertTimeStrToMillisec, logger, sendError, sendResponse } from "../../helpers";
-import { tokenBlackListService } from "../../services/tokenBlackListService";
+import { tokenBlockListService } from "../../services/tokenBlockListService";
 import { userTokenService } from "../../services/userTokenService";
 
 const logoutController = asyncWrapper(async (req: Request, res: Response) => {
@@ -19,7 +19,7 @@ const logoutController = asyncWrapper(async (req: Request, res: Response) => {
     await userTokenService.removeUserTokenByToken(refreshToken);
 
     if (accessToken) {
-      await tokenBlackListService.addTokenToBlacklist(
+      await tokenBlockListService.addTokenToBlocklist(
         accessToken,
         tokenExp ?? convertTimeStrToMillisec(config.accessTokenExpiration),
       );

@@ -4,7 +4,7 @@ import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback } from "passport-
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 
-import { tokenBlackListService } from "../services/tokenBlackListService";
+import { tokenBlockListService } from "../services/tokenBlockListService";
 import { messages } from "../constants";
 import { config, loadConfigVariables } from "../config";
 import { userService } from "../services/userService";
@@ -65,7 +65,7 @@ passport.use(
         const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
         if (accessToken) {
-          const isBlocked = await tokenBlackListService.isTokenBlackListed(accessToken);
+          const isBlocked = await tokenBlockListService.isTokenBlocked(accessToken);
 
           if (isBlocked) {
             logger.error(messages.NOT_LOGGED);

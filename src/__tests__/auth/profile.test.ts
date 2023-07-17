@@ -200,7 +200,7 @@ describe("Auth Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return an authorization error the user token is blacklisted in Redis", async () => {
+    it("should return an authorization error the user token is blocked in Redis", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
@@ -227,7 +227,7 @@ describe("Auth Module", () => {
       expect(redisClient.get).toHaveBeenCalledWith(`bl_${ACCESS_TOKEN}`);
     });
 
-    it("should return a successful profile data response, in case the access token is correct and Redis isn't ready (i.e., the token is not considered in blacklist)", async () => {
+    it("should return a successful profile data response, in case the access token is correct and Redis isn't ready (i.e., the token is not considered blocked)", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jwt.verify.mockImplementation((_token, _secretOrPublicKey, _options, callback) => {
