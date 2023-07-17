@@ -33,37 +33,37 @@
 
 ## 💻 Project Description
 
-The project was developed to provide an authentication API built with Node.js and Express.js, showcasing the following major functionalities:
+This project showcases an authentication API built with Node.js and Express.js, featuring the following major functionalities:
 
 1. User registration
 2. Sign in/Sign out
-3. Refresh access token
-4. Get and update user profile
-5. Admin features (create new account, get complete user list, get user, update user, delete user)
+3. Refresh access tokens
+4. Retrieve and update user profiles
+5. Admin features (create new accounts, retrieve complete user lists, retrieve and update individual users, delete users)
 6. Mock protected routes
-7. Get sample data with pagination
+7. Retrieve sample data with pagination
 
-- The data endpoints return some fake Airbnb data to be consumed by sample applications (original database retrieved from MongoDB Atlas - more info: https://www.mongodb.com/docs/atlas/sample-data/sample-airbnb/)
+- The data endpoints provide fake Airbnb data for consumption by sample applications. The original database was retrieved from MongoDB Atlas (for more information, visit: https://www.mongodb.com/docs/atlas/sample-data/sample-airbnb/).
 
-It was developed with [Node.js](https://nodejs.org/) and [Express](https://expressjs.com/), using [Husky](https://typicode.github.io/husky/#/), [lint-staged](https://github.com/okonet/lint-staged), [eslint](https://eslint.org/), [prettier](https://prettier.io/) and [commitlint](https://commitlint.js.org/#/) with [conventional commits](conventionalcommits.org/).
+The project was developed using the following technologies and tools: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), [Husky](https://typicode.github.io/husky/#/), [lint-staged](https://github.com/okonet/lint-staged), [eslint](https://eslint.org/), [prettier](https://prettier.io/) and [commitlint](https://commitlint.js.org/#/) with [conventional commits](conventionalcommits.org/).
 
-The API uses a MongoDB server to store the users, their sign in tokens and also to serve dummy data (i.e., Airbnb sample data). A Redis server instance is used to block the access to signed out access tokens (avoiding that a not expired access token can be used to perform an unauthorized access).
+To store user data, sign-in tokens, and serve dummy data (i.e., the Airbnb sample data), the API utilizes a [MongoDB](https://www.mongodb.com/) server. Additionally, a [Redis](https://redis.io/) server instance is employed to block access to signed-out access tokens, thereby preventing unauthorized access by unexpired access tokens.
 
-You can try this API running it in your local environment, in a Docker container or you can access it directly from the web. The installation instructions vay according to the target environment.
+You can try out this API by running it in your local environment, within a Docker container, or by accessing it directly from the web. The installation instructions vary depending on the target environment.
 
 ### 💾 Database schema design
 
 ![MongoDB database schema design](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/46e92a2740064a029c35c7d0e4255298077332b9/resources/db-diagram.svg?token=AHN7SWKNO3UDVRCQDSARBZLEWTC54)
 
-### 🔑 How the refresh token rotation works?
+### 🔑 How Refresh Token Rotation Works
 
-The refresh token rotation is a technique used to securely manage the authentication tokens responsible for keeping the user session active. When performing the authentication with user/password credentials, the API returns two different types of tokens: the **refresh token** and the **access token**. Those tokens can be opaque (i.e., a randomly generated string) or they can use an specific generation technology, such as JWT (JSON Web Token).
+Refresh token rotation is a secure technique used to manage authentication tokens that keep user sessions active. When authenticating with user/password credentials, the API generates two types of tokens: the **refresh token** and the **access token**. These tokens can be opaque strings or use a specific technology like JWT (JSON Web Token).
 
-The **refresh token** should stored as a browser cookie with the flags `Secure` (i.e., it can only be transferred through HTTPS connections) and `HttpOnly` (i.e., it can't be accessed using Javascript code). On the other hand, the **access token** is returned in the response body and should be kept (preferably) in the browser memory (storing the **access token** in the localStorage is not secure!). The **access token** should be short lived (i.e., it should expire in a small amount of time - for security purposes).
+The **refresh token** should be stored as a browser cookie with the following flags: (a) `Secure` - it can only be transferred over HTTPS connections; and (b) `HttpOnly` - it cannot be accessed using JavaScript code. On the other hand, the **access token** is returned in the API response body and should be stored in the browser memory (preferably avoiding the use of the localStorage due to security concerns). The **access token** should have a short lifespan for increased security, meaning it should expire within a short period.
 
-All restricted API requests should send (in the Authorization Header) the **access token**, which is validated by the API. In the case a valid **access token** is sent, the endpoint access is granted. On the other hand, in case the token has expired, the client should refresh both **access** and **refresh tokens**. The old tokens (if they are still valid) should be temporarily stored in MongoDB and Redis to avoid new unauthorized accesses.
+To access restricted API endpoints, all requests need to include the **access token** in the Authorization Header. The API validates the access token, granting access if it's valid. If the access token has expired, the client needs to refresh both the **access token** and the **refresh token**. If the old tokens are still valid, they should be temporarily stored in MongoDB and Redis to prevent unauthorized access attempts.
 
-Finally, if the current **refresh token** was denied (during the tokens refreshing), that means that the user should perform a new authentication. The following image depicts the communication flow between the client and server:
+If the current **refresh token** is not valid during the token refresh process, it indicates that the user needs to perform a new authentication. The following image illustrates the communication flow between the client and server:
 
 ![Refresh token rotation flow](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/main/resources/session-flow.png?token=GHSAT0AAAAAACDARR7UEA2SUBWLBKKT52PQZFU2PWQ)
 
@@ -110,9 +110,9 @@ After configuring the `.env` file, you can start installing the dependencies, bu
 
 ### 🏡 Local installation
 
-In order to run the project locally, you need to run the MongoDB and Redis servers, according to the urls and credentials provided in the `.env` file. In case you don't have the servers running locally, you can use the servers available in the Docker environment (follow the instructions available in the Section [Running the project in a Docker container](#-docker-installation)) or connecting to remote instances (e.g., [MongoDB Atlas](https://www.mongodb.com/) or [Redis Cloud](https://redis.com/)).
+To run the project locally, you need to make sure you have MongoDB and Redis servers running locally. The necessary URLs and credentials should be configured in the `.env` file. If you don't have the servers running locally, you can utilize the servers available in the Docker environment (follow the instructions available in the Section [Running the project in a Docker container](#-docker-installation)), or you can connect to remote instances of MongoDB and Redis servers (such as, [MongoDB Atlas](https://www.mongodb.com/) and [Redis Cloud](https://redis.com/)).
 
-Before running the API service, we need to populate the MongoDB database with some initial data. To do this, you need to install the `MongoDB database tools` in your system (you can follow the instructions available in this [link](https://www.mongodb.com/docs/manual/installation/)). After the installation, the `mongorestore` command should be available:
+Before running the API service, the MongoDB database needs to be populated with initial data. To accomplish this, you must install the `MongoDB database tools` on your system (you can follow the installation instructions available in this [link](https://www.mongodb.com/docs/manual/installation/)). After the installation, the `mongorestore` command should be available for use in the current path.
 
 ```bash
 # Verifying the mongorestore version
@@ -133,9 +133,9 @@ With `mongorestore` available in the current path, you can execute the following
 $ yarn db:seed
 ```
 
-**IMPORTANT:** in the case you are running the API service in your local environment, your MongoDB and Redis URLs should point to your `localhost` (127.0.0.1) or other hosts. By default, the `.env.example` file points to `mongo` ("mongodb://mongo:27017") and `redis` ("redis://redis:6379") hostnames, which are only accessible from the Docker runtime environment.
+**IMPORTANT:** If you are running the API service in your local environment, ensure that your MongoDB and Redis URLs are configured to point to your `localhost` (127.0.0.1) or other appropriate hosts. The default settings in the `.env.example` file specify the hostnames `mongo` ("mongodb://mongo:27017") and `redis` ("redis://redis:6379"), which are accessible only within the Docker runtime environment.
 
-After installing the tools and the source code, you can install the dependencies, build and run the project.
+Once you have installed the necessary tools and obtained the source code, the next step is to install the required dependencies, to build and run the project.
 
 ```bash
 # Install dependencies
@@ -148,7 +148,7 @@ $ yarn build
 $ yarn start
 ```
 
-In case you need to run the code in development mode you can use the following command:
+In case you need to run the code in development mode, you can use the following command:
 
 ```bash
 # Run the API in development mode
@@ -173,29 +173,34 @@ Some other interesting commands:
 
 ### 🐟 Docker installation
 
-To run the code directly on a Docker container, you can build and run the current image using the `docker-compose` command.
+To run the project directly in a Docker container, you can build and run the image using the `docker-compose` command.
 
 ```bash
 # Build and run the current Docker image
 $ docker-compose up -d
 ```
 
-Running this command in the project directory begins the installation of all dependencies, builds the image and runs the container. After this process, the service should run using the configuration specified in the `.env` file.
+Running the command in the project directory initiates the installation of dependencies, builds the image, and runs the container. Following this process, the service should be operational, utilizing the configuration specified in the `.env` file.
 
-To allow the API service to have access to MongoDB and Redis instances, the `.env` file used when building the containers need to use the `mongo` and `redis` hostnames. In case you need to seed the docker instances from your system, you need to update your local `.env` file to use `localhost` (127.0.0.1) servers.
+For the API service to have access to MongoDB and Redis instances, the `.env `file used during container construction should use the hostnames `mongo` and `redis` (since they are used to provide access to other containers). If you wish to seed the MongoDB instance running in the Docker container, directly from your system, update your local `.env` file to utilize `localhost` (127.0.0.1) servers before running `yarn db:seed`.
 
 The applications will be available in the following ports:
   - Authentication API - `http://localhost:3000`
   - MongoDB - `mongodb://localhost:27017/authusers`
   - Redis - `redis://localhost:6379`
-  - Mongo Express (to manage MongoDB through a web interface) - `http://localhost:8081/db/authusers/`
+  - Mongo Express (used to manage MongoDB through a web interface) - `http://localhost:8081/db/authusers/`
 
-**IMPORTANT:** If you want to use the MongoDB and Redis servers from the Docker container, but you want to run the API service locally, you can start the containers and stop only the API service using the following command:
+**IMPORTANT:** To utilize the Dockerized MongoDB and Redis servers, while running the API service locally, follow these steps:
+
+1. Start the containers containing the MongoDB and Redis servers using the appropriate command for your Docker setup (i.e., `docker-compose up -d`);
+2. Stop the API service, executing the following command:
 
 ```bash
 # Stop the API service container
 $ docker stop server
 ```
+
+By following these instructions, you can have the MongoDB and Redis servers running in Docker and available to be used by the local API service instance.
 
 ### 🕸️ Testing the project online
 
@@ -203,28 +208,28 @@ This API was deployed on [Render](https://render.com/) and it is available for t
 
 [Authentication API](https://express-typescript-auth.onrender.com/)
 
-**IMPORTANT:** Accessing the application using the previous URL can take a while on the first time (due its startup time). Free instances are automatically spun down after 15 minutes of inactivity.
+**IMPORTANT:** When accessing the application for the first time using the previous URL, it may take a while due to its startup time. Free Render instances are automatically shut down after 15 minutes of inactivity.
 
 ---
 
 ## 🎉 How to use
 
-After having the service running, you can access its endpoints using any REST client. The API was documented using [Swagger](https://swagger.io/), and it can be accessed in the following link:
+Once the service is up and running, you have the flexibility to access its endpoints using any REST client of your choice. The API documentation has been prepared using [Swagger](https://swagger.io/), and you can access it through the following link:
 
 [Authentication API Documentation](https://express-typescript-auth.onrender.com/api-docs/)
 
-The following demo users can be used to login in the API (if you have seed the database or you are using the online API):
+If you have seeded the database or are utilizing the online API, the following demo users can be used to log in to the API:
 
 > | Email             | Password | Access       |
 > | ----------------- | -------- | ------------ |
 > | `email@email.com` | `123456` | User Access  |
 > | `admin@gmail.com` | `admin`  | Admin Access |
 
-A Postman collection is available online and can be accessed through the following button:
+A Postman collection is available and can be accessed through the following button:
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/8682347-f12057bc-b938-4e18-92da-0c9208b29bbb?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D8682347-f12057bc-b938-4e18-92da-0c9208b29bbb%26entityType%3Dcollection%26workspaceId%3Da7728e8e-b3f3-45a3-a665-22c06d95ff3e#?env%5Blogin-api%20-%20prod%5D=W3sia2V5IjoiYWNjZXNzVG9rZW4iLCJ2YWx1ZSI6IiIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoiIiwic2Vzc2lvbkluZGV4IjowfSx7ImtleSI6IlNFUlZFUiIsInZhbHVlIjoiaHR0cHM6Ly9leHByZXNzLXR5cGVzY3JpcHQtYXV0aC5vbnJlbmRlci5jb20iLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiZGVmYXVsdCIsInNlc3Npb25WYWx1ZSI6Imh0dHBzOi8vZXhwcmVzcy10eXBlc2NyaXB0LWF1dGgub25yZW5kZXIuY29tIiwic2Vzc2lvbkluZGV4IjoxfV0=)
 
-Access to restricted API endpoints requires a (short lived) access token. To obtain your access token, make a request along with any `username` and `password` credentials to `/login`. The refresh token is also returned to allow the client to request new short lived access tokens.
+To access restricted API endpoints, you will need a (short-lived) access token. To obtain your access token, send a request to `/login` along with your `username` and `password` credentials. The API will return both the access token and a refresh token, which can be used by the client to request new short-lived access tokens when needed.
 
 **Sample Response:**
 
