@@ -18,11 +18,11 @@
 - [Project Description](#-project-description)
   - [Database schema design](#-database-schema-design)
   - [How the refresh token rotation works?](#-how-the-refresh-token-rotation-works)
-- [Prerequisites](#prerequisites)
+- [Prerequisites](#%EF%B8%8F-prerequisites)
 - [Installation](#-installation)
   - [Local installation](#-local-installation)
   - [Docker installation](#-docker-installation)
-  - [Testing project online](#-testing-project-online)
+  - [Testing the project online](#%EF%B8%8F-testing-the-project-online)
 - [How to use](#-how-to-use)
 - [Technologies](#-technologies)
 - [TODO list](#-todo-list)
@@ -68,8 +68,6 @@ Finally, if the current **refresh token** was denied (during the tokens refreshi
 ![Refresh token rotation flow](https://raw.githubusercontent.com/rafaelfl/express-typescript-auth/main/resources/session-flow.png?token=GHSAT0AAAAAACDARR7UEA2SUBWLBKKT52PQZFU2PWQ)
 
 (image credits to [Supertokens](https://supertokens.com/blog/the-best-way-to-securely-manage-user-sessions))
-
-<a name="prerequisites"></a>
 
 ## ⚙️ Prerequisites
 
@@ -199,7 +197,7 @@ The applications will be available in the following ports:
 $ docker stop server
 ```
 
-### 🕸️ Testing project online
+### 🕸️ Testing the project online
 
 This API was deployed on [Render](https://render.com/) and it is available for testing through the following URL:
 
