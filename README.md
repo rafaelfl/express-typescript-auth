@@ -9,7 +9,7 @@
 
 ## About
 
-<p align="center">Project that provides an Authentication API that implements a refresh token rotation scheme (based on JWT tokens) and token reuse detection using Node.js, Express and Typescript</p>
+<p align="center">Authentication API that implements a refresh token rotation scheme (based on JWT tokens) and token reuse detection using Node.js, Express and Typescript</p>
 
 ## Table of Contents
 
