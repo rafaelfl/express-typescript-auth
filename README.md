@@ -5,11 +5,11 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
+**If you like this project then give it a Github star!** 🤩⭐
+
 ## About
 
 <p align="center">Project that provides an Authentication API that implements a refresh token rotation scheme (based on JWT tokens) and token reuse detection using Node.js, Express and Typescript</p>
-
-**If you like this project then give it a Github star!** 🤩⭐
 
 ## Table of Contents
 
