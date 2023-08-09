@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import express from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import helmet from "helmet";
 import createError from "http-errors";
 import cookieParser from "cookie-parser";
@@ -31,7 +31,24 @@ const swaggerDocument = yaml.parse(file);
 // Morgan redirected to winston logger
 app.use(httpLogger);
 
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+const allowedList = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://localhost:3000",
+  "https://login.rafaelf.dev:3000",
+];
+const corsOptions: CorsOptions = {
+  credentials: true,
+  origin: (origin, callback) => {
+    if (allowedList.includes(origin ?? "") || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 
 app.use(helmet());
 
