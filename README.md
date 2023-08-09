@@ -208,9 +208,11 @@ By following these instructions, you can have the MongoDB and Redis servers runn
 
 This API was deployed on [Render](https://render.com/) and it is available for testing through the following URL:
 
-[Authentication API](https://express-typescript-auth.onrender.com/)
+[Authentication API](https://api.rafaelf.dev/)
 
 **IMPORTANT:** When accessing the application for the first time using the previous URL, it may take a while due to its startup time. Free Render instances are automatically shut down after 15 minutes of inactivity.
+
+**IMPORTANT 2:** The project uses a dynamic origin CORS configuration. It verifies if the origin domain exists in a list of allowed domains during the browser CORS check. The allowed domains are: "http://localhost:3000", "http://localhost:3001", "https://localhost:3000" and "https://login.rafaelf.dev:3000". As can be seen, some domains are HTTP domains. They can be used for testing, but since the refresh token has the "Secure" flag, no token refreshing can be performed in HTTP domains (so, when the access token expires, a new login should be performed).
 
 ---
 
@@ -218,14 +220,14 @@ This API was deployed on [Render](https://render.com/) and it is available for t
 
 Once the service is up and running, you have the flexibility to access its endpoints using any REST client of your choice. The API documentation has been prepared using [Swagger](https://swagger.io/), and you can access it through the following link:
 
-[Authentication API Documentation](https://express-typescript-auth.onrender.com/api-docs/)
+[Authentication API Documentation](https://api.rafaelf.dev/api-docs/)
 
 If you have seeded the database or are utilizing the online API, the following demo users can be used to log in to the API:
 
-> | Email             | Password | Access       |
-> | ----------------- | -------- | ------------ |
-> | `email@email.com` | `123456` | User Access  |
-> | `admin@gmail.com` | `admin`  | Admin Access |
+> | Email                        | Password | Access       |
+> | ---------------------------- | -------- | ------------ |
+> | `rafael.fernandes@email.com` | `123456` | User Access  |
+> | `admin@gmail.com`            | `admin`  | Admin Access |
 
 A Postman collection is available and can be accessed through the following button:
 
