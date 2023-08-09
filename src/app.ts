@@ -31,7 +31,8 @@ const swaggerDocument = yaml.parse(file);
 // Morgan redirected to winston logger
 app.use(httpLogger);
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
 app.use(helmet());
 
 app.use(express.json());
