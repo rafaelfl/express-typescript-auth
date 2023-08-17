@@ -82,6 +82,15 @@ export interface AirbnbDataModel extends Document {
     reviewer_name: string;
     comments: string;
   }>;
+  review_scores: {
+    review_scores_accuracy: number;
+    review_scores_cleanliness: number;
+    review_scores_checkin: number;
+    review_scores_communication: number;
+    review_scores_location: number;
+    review_scores_value: number;
+    review_scores_rating: number;
+  };
 }
 
 const AirbnbImagesSchema = new Schema({
@@ -133,6 +142,16 @@ const AirbnbReviewsSchema = new Schema({
   comments: String,
 });
 
+const AirbnbReviewScoresSchema = new Schema({
+  eview_scores_accuracy: Number,
+  review_scores_cleanliness: Number,
+  review_scores_checkin: Number,
+  review_scores_communication: Number,
+  review_scores_location: Number,
+  review_scores_value: Number,
+  review_scores_rating: Number,
+});
+
 const AirbnbDataSchema = new Schema(
   {
     _id: String,
@@ -174,6 +193,7 @@ const AirbnbDataSchema = new Schema(
     host: AirbnbHostSchema,
     address: AirbnbAddressSchema,
     reviews: [AirbnbReviewsSchema],
+    review_scores: [AirbnbReviewScoresSchema],
   },
   { collection: "airbnbSampleData" },
 );

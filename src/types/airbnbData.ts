@@ -79,4 +79,13 @@ export interface AirbnbData {
     reviewer_name: string;
     comments: string;
   }>;
+  review_scores: {
+    review_scores_accuracy: number;
+    review_scores_cleanliness: number;
+    review_scores_checkin: number;
+    review_scores_communication: number;
+    review_scores_location: number;
+    review_scores_value: number;
+    review_scores_rating: number;
+  };
 }

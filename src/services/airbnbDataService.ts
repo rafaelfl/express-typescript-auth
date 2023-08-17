@@ -47,6 +47,7 @@ const convertAirbnbDocToAirbnbData = (airbnbDoc: AirbnbDoc) => {
     host: { ...airbnbDoc.host },
     address: { ...airbnbDoc.address },
     reviews: [...airbnbDoc.reviews.map(r => ({ id: r._id, ...r, _id: undefined }))],
+    review_scores: { ...airbnbDoc.review_scores },
   };
 
   return airbnbData;
