@@ -68,8 +68,8 @@ export const validators = {
   ],
 
   getPaginatedDataValidationRule: [
-    query("page", "'page' must have a numerical value").optional().isNumeric(),
-    query("size", "'size' must have a numerical value").optional().isNumeric(),
+    query("page", "'page' must have a numerical value greater than 0").optional().isInt({ gt: 0 }),
+    query("size", "'size' must have a numerical value greater than 0").optional().isInt({ gt: 0 }),
   ],
 
   dataIdValidationRule: [param("dataId", "'dataId' must be present in the URL").isString()],

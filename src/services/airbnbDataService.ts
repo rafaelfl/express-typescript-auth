@@ -57,7 +57,7 @@ export const airbnbDataService = {
     const airbnbDataDoc = await airbnbDataModel
       .find()
       .sort({ _id: 1 })
-      .skip(pageNumber > 0 ? (pageNumber - 1) * pageSize : 0)
+      .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .lean();
 

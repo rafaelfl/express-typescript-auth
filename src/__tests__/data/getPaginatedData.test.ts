@@ -174,8 +174,8 @@ describe("Data Module", () => {
         .expect(422, {
           success: false,
           errors: [
-            { message: "'page' must have a numerical value" },
-            { message: "'size' must have a numerical value" },
+            { message: "'page' must have a numerical value greater than 0" },
+            { message: "'size' must have a numerical value greater than 0" },
           ],
         });
     });
@@ -221,7 +221,7 @@ describe("Data Module", () => {
 
       await request(app)
         .get("/api/v1/data")
-        .query({ page: "0", size: "10" })
+        .query({ page: "1", size: "10" })
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .then(res => {
           expect(res.statusCode).toEqual(200);
@@ -266,7 +266,7 @@ describe("Data Module", () => {
 
       await request(app)
         .get("/api/v1/data")
-        .query({ page: "0", size: "10" })
+        .query({ page: "1", size: "10" })
         .set({ Authorization: `Bearer ${ACCESS_TOKEN}`, Accept: "application/json" })
         .then(res => {
           expect(res.statusCode).toEqual(200);

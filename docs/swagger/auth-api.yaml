@@ -971,6 +971,13 @@ paths:
               schema:
                 $ref: '#/components/responses/TokenError'
 
+        '422':
+          description: Return an unprocessable content response in case the page or size parameters are lower than 1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/MissingUpdateProfileFields'
+
         '500':
           description: Return a server error status
           content:
